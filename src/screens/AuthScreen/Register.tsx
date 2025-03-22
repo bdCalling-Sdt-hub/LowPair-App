@@ -6,7 +6,7 @@ import tw from '../../lib/tailwind';
 import { SvgXml } from 'react-native-svg';
 import { EyeIcon, EyeOffIcon } from '../../assets/Icons';
 import { useNavigation } from '@react-navigation/native';
-
+import { useRegisterUserMutation } from '../../redux/features/users/UserApi';
 
 // Define types for user role
 type UserType = 'user' | 'attorney';
@@ -17,25 +17,49 @@ interface FormData {
   lastName: string;
   email: string;
   password: string;
+  confirmPassword: string;
 }
 
-const Register: React.FC = ({navigation}:any) => {
-
+const Register: React.FC = () => {
   const [userType, setUserType] = useState<UserType>('user');
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState<boolean>(false);
 
   // React Hook Form setup
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<FormData>();
 
+  // Get password value for validation
+  const password = watch('password');
+
+  // Use mutation hook for registration
+  const [registerUser, { isLoading, error }] = useRegisterUserMutation();
+  
+  const navigation = useNavigation();
+
   // Function to handle form submission
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     console.log('Form Data:', data);
-    if(data){
+
+    const formData = {
+      first_name: data.firstName,
+      last_name: data.lastName,
+      email: data.email,
+      password: data.password,
+      password_confirmation: data.confirmPassword,
+      role: userType,
+    };
+
+    try {
+      const response = await registerUser(formData).unwrap();
+      console.log('Registration successful:', response);
       navigation.navigate('HomeScreen');
+    } catch (err) {
+      console.error('Registration failed:', err);
     }
   };
 
@@ -125,7 +149,7 @@ const Register: React.FC = ({navigation}:any) => {
           )}
         />
 
-        {/* Password Field with Toggleable Icon */}
+        {/* Password Field */}
         <Controller
           control={control}
           name="password"
@@ -146,12 +170,7 @@ const Register: React.FC = ({navigation}:any) => {
                 <TouchableOpacity
                   style={tw`absolute right-4 top-3`}
                   onPress={() => setPasswordVisible(!passwordVisible)}>
-                 <SvgXml
-                xml={passwordVisible ? EyeOffIcon : EyeIcon}
-                width={20}
-                height={20}
-                style={tw`ml-2`}
-              />
+                  <SvgXml xml={passwordVisible ? EyeOffIcon : EyeIcon} width={20} height={20} />
                 </TouchableOpacity>
               </View>
               {errors.password && <Text style={tw`text-red-500`}>{errors.password.message}</Text>}
@@ -159,21 +178,39 @@ const Register: React.FC = ({navigation}:any) => {
           )}
         />
 
-        {/* Create Account Button */}
-        <TouchableOpacity
-          style={tw`bg-blue-500 h-11 rounded mt-3 flex flex-row items-center justify-center`}
-          onPress={handleSubmit(onSubmit)}>
+        {/* Confirm Password Field */}
+        <Controller
+          control={control}
+          name="confirmPassword"
+          rules={{
+            required: 'Confirm password is required',
+            validate: (value) => value === password || 'Passwords do not match',
+          }}
+          render={({ field: { onChange, value } }) => (
+            <>
+              <View style={tw`relative`}>
+                <TextInput
+                  style={tw`h-12 border border-gray-300 rounded px-4 bg-gray-100 mb-2 pr-10`}
+                  placeholder="Confirm password"
+                  secureTextEntry={!confirmPasswordVisible}
+                  value={value}
+                  onChangeText={onChange}
+                />
+                <TouchableOpacity
+                  style={tw`absolute right-4 top-3`}
+                  onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}>
+                  <SvgXml xml={confirmPasswordVisible ? EyeOffIcon : EyeIcon} width={20} height={20} />
+                </TouchableOpacity>
+              </View>
+              {errors.confirmPassword && <Text style={tw`text-red-500`}>{errors.confirmPassword.message}</Text>}
+            </>
+          )}
+        />
+
+        <TouchableOpacity style={tw`bg-blue-500 h-11 rounded mt-3 items-center justify-center`} onPress={handleSubmit(onSubmit)}>
           <Text style={tw`text-white text-[16px] font-bold`}>Create account</Text>
         </TouchableOpacity>
       </View>
-      <View style={tw`flex-row items-center justify-center pt-11 `}>
-          <Text style={tw`text-[#41414D] text-sm font-semibold`}>Don't have an account?</Text>
-          <TouchableOpacity
-           onPress={() => navigation.navigate('LoginScreen')}
-           >
-            <Text style={tw`text-[#4B8FCB] text-sm font-semibold pl-1`}>Sign in</Text>
-          </TouchableOpacity>
-        </View>
     </View>
   );
 };

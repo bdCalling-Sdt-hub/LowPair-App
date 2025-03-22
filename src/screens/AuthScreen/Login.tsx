@@ -1,32 +1,30 @@
-import {View, Text, TextInput, TouchableOpacity, Pressable} from 'react-native';
-import React, {useState} from 'react';
-import {useForm, Controller} from 'react-hook-form';
+import { View, Text, TextInput, TouchableOpacity, Pressable } from 'react-native';
+import React, { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import tw from '../../lib/tailwind';
 import Header from '../../components/Header';
-import {SvgXml} from 'react-native-svg';
-import {
-  emailIcon,
-  EyeIcon,
-  EyeOffIcon,
-  LockIcon,
-  LoginIcon,
-  rememberme,
-} from '../../assets/Icons';
-import {useNavigation} from '@react-navigation/native';
+import { SvgXml } from 'react-native-svg';
+import { emailIcon, EyeIcon, EyeOffIcon, LockIcon, LoginIcon, rememberme } from '../../assets/Icons';
+import { useNavigation } from '@react-navigation/native';
+import { useLoginUserMutation } from '../../redux/features/users/UserApi';
+
 
 interface LoginProps {
   email: string;
   password: string;
 }
 
-const Login = ({navigation}: any) => {
+const Login = ({ navigation }: any) => {
+  const attorney = false;
+  const user = true;
 
-  const attorney =  false
-  const user = true
+  // Redux API hook
+  const [loginUser, { isLoading, error }] = useLoginUserMutation();
+
   const {
     control,
     handleSubmit,
-    formState: {errors},
+    formState: { errors },
   } = useForm<LoginProps>();
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -36,19 +34,28 @@ const Login = ({navigation}: any) => {
     setShowPassword(prev => !prev);
   };
 
+  const onSubmit = async (data: LoginProps) => {
+    const formData = new FormData();
+    formData.append('email', data.email);
+    formData.append('password', data.password);
+    formData.append('role', user ? 'user' : 'attorney'); // Adjust role based on your condition
 
-
-  const onSubmit = (data: LoginProps) => {
-    // if (data.email && data.password) {
-      // navigation.navigate('bottomroutes');
-    // }
+    try {
+      const response = await loginUser(formData).unwrap();
+      // Navigate on successful login
+      if (response) {
+        navigation.navigate(attorney ? 'attorneybottomroutes' : 'bottomroutes');
+      }
+    } catch (err) {
+      console.error('Login failed:', err);
+    }
   };
 
   return (
     <View style={tw`flex-1 `}>
       <Header title="Sign-in to your account..." isbackbutton={false} />
 
-      <View style={tw`px-4 pt-[80% ] pb-6`}>
+      <View style={tw`px-4 pt-[20%] pb-6`}>
         {/* Email Input */}
         <View style={tw`mb-4 relative`}>
           <Text style={tw`text-[#41414D] text-[14px] font-normal pb-[4px]`}>
@@ -65,7 +72,7 @@ const Login = ({navigation}: any) => {
                   message: 'Invalid email address',
                 },
               }}
-              render={({field: {onChange, onBlur, value}}) => (
+              render={({ field: { onChange, onBlur, value } }) => (
                 <View style={tw`relative`}>
                   <TextInput
                     style={tw`border p-2 h-[48px] text-[#41414D] rounded-md focus:border-2 border-[#4B8FCB] pl-10 ${
@@ -91,21 +98,19 @@ const Login = ({navigation}: any) => {
 
         {/* Password Input */}
         <View style={tw`mb-4`}>
-          <Text style={tw`text-[#41414D] text-[14px] font-normal pb-[4px]`}>
-            Password
-          </Text>
+          <Text style={tw`text-[#41414D] text-[14px] font-normal pb-[4px]`}>Password</Text>
           <View
             style={tw`relative flex-row items-center border px-2 rounded-md ${
               errors.password ? 'border-red-500' : 'border-gray-300'
-            }`}>
-            {/* Lock Icon */}
+            }`}
+          >
             <SvgXml xml={LockIcon} width={20} height={20} style={tw`mr-2`} />
 
             <Controller
               control={control}
               name="password"
-              rules={{required: 'Password is required'}}
-              render={({field: {onChange, onBlur, value}}) => (
+              rules={{ required: 'Password is required' }}
+              render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
                   style={tw`flex-1 text-[#41414D] h-[48px]`}
                   placeholder="Enter your password"
@@ -117,7 +122,6 @@ const Login = ({navigation}: any) => {
               )}
             />
 
-            {/* Eye Toggle Icon */}
             <Pressable onPress={togglePasswordVisibility}>
               <SvgXml
                 xml={showPassword ? EyeOffIcon : EyeIcon}
@@ -133,55 +137,23 @@ const Login = ({navigation}: any) => {
           )}
         </View>
 
-        {/* Remember Me & Forgot Password */}
-        <View style={tw`flex-row justify-between items-center mb-6`}>
-          <TouchableOpacity
-            onPress={() => setRememberMe(!rememberMe)}
-            style={tw`flex-row items-center`}>
-            {rememberMe ? (
-              <SvgXml xml={rememberme} />
-            ) : (
-              <View
-                style={tw`w-[20px] h-[20px] border rounded mr-2 border-gray-400`}
-              />
-            )}
-            <Text style={tw`text-[#41414D] text-sm pl-1`}>Remember Me</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => navigation.navigate('forgetpassword')}>
-            <Text style={tw`text-[#4B8FCB] text-sm font-semibold`}>
-              Forgot Password?
-            </Text>
-          </TouchableOpacity>
-        </View>
-
         {/* Submit Button */}
         <TouchableOpacity
           style={tw`bg-primary p-3 rounded-md flex flex-row items-center justify-center`}
-          onPress={
-            
-            // handleSubmit(onSubmit)
-            () => navigation.navigate(`${attorney ? 'attorneybottomroutes' :'bottomroutes'}`)
-            
-            
-            }>
+          onPress={handleSubmit(onSubmit)}
+        >
           <View style={tw`flex flex-row items-center justify-center`}>
-            <Text style={tw`text-[#E7E7E9] text-[16px] font-bold pr-1`}>
-              Sign in
-            </Text>
+            <Text style={tw`text-[#E7E7E9] text-[16px] font-bold pr-1`}>Sign in</Text>
             <SvgXml xml={LoginIcon} />
           </View>
         </TouchableOpacity>
 
-        <View style={tw`flex-row items-center justify-center pt-11 `}>
+        <View style={tw`flex-row items-center justify-center pt-11`}>
           <Text style={tw`text-[#41414D] text-sm font-semibold`}>
             Don't have an account?
           </Text>
           <TouchableOpacity onPress={() => navigation.navigate('register')}>
-            <Text style={tw`text-[#4B8FCB] text-sm font-semibold pl-1`}>
-              Sign up
-            </Text>
+            <Text style={tw`text-[#4B8FCB] text-sm font-semibold pl-1`}>Sign up</Text>
           </TouchableOpacity>
         </View>
       </View>
