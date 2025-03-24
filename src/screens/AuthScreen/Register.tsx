@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import Header from '../../components/Header';
 import tw from '../../lib/tailwind';
@@ -43,7 +43,7 @@ const Register: React.FC = () => {
 
   // Function to handle form submission
   const onSubmit = async (data: FormData) => {
-    console.log('Form Data:', data);
+  
 
     const formData = {
       first_name: data.firstName,
@@ -54,13 +54,22 @@ const Register: React.FC = () => {
       role: userType,
     };
 
-    try {
       const response = await registerUser(formData).unwrap();
-      console.log('Registration successful:', response);
-      navigation.navigate('HomeScreen');
-    } catch (err) {
-      console.error('Registration failed:', err);
+      console.log('Registration successful', response);
+    if (response.success) {
+      Alert.alert('Registration successful!');
     }
+    if (response?.data?.success) {
+      Alert.alert('Registration successful!');
+    }
+    if(response.success === false){
+      Alert.alert(response.message);
+    }
+
+
+     
+      // navigation.navigate('otpverify', { email: response?.data.email });
+    
   };
 
   return (
@@ -207,8 +216,8 @@ const Register: React.FC = () => {
           )}
         />
 
-        <TouchableOpacity style={tw`bg-blue-500 h-11 rounded mt-3 items-center justify-center`} onPress={handleSubmit(onSubmit)}>
-          <Text style={tw`text-white text-[16px] font-bold`}>Create account</Text>
+        <TouchableOpacity style={tw`bg-primary h-11 rounded mt-3 items-center justify-center`} onPress={handleSubmit(onSubmit)}>
+          <Text style={tw`text-white text-[16px] font-bold`}>{isLoading ? 'Loading...' : 'Create account'}</Text>
         </TouchableOpacity>
       </View>
     </View>

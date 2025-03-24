@@ -38,17 +38,29 @@ const Login = ({ navigation }: any) => {
     const formData = new FormData();
     formData.append('email', data.email);
     formData.append('password', data.password);
-    formData.append('role', user ? 'user' : 'attorney'); // Adjust role based on your condition
+    // formData.append('role', user ? 'user' : 'attorney'); 
 
-    try {
-      const response = await loginUser(formData).unwrap();
-      // Navigate on successful login
-      if (response) {
-        navigation.navigate(attorney ? 'attorneybottomroutes' : 'bottomroutes');
-      }
-    } catch (err) {
-      console.error('Login failed:', err);
-    }
+    console.log('Raw FormData:', formData);
+
+navigation.navigate(attorney ? 'attorneybottomroutes' : 'bottomroutes');
+
+
+    // try {
+    //   const response = await loginUser(formData).unwrap();
+
+    //   console.log('Raw Response:', response);
+
+    //   // const parsedData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+
+    //   // console.log('Parsed Data:', parsedData);
+
+    //   if (response) {
+    //     navigation.navigate(attorney ? 'attorneybottomroutes' : 'bottomroutes');
+    //   }
+    // } catch (err) {
+    //   console.error('Login failed:', err);
+    // }
+
   };
 
   return (
@@ -75,9 +87,8 @@ const Login = ({ navigation }: any) => {
               render={({ field: { onChange, onBlur, value } }) => (
                 <View style={tw`relative`}>
                   <TextInput
-                    style={tw`border p-2 h-[48px] text-[#41414D] rounded-md focus:border-2 border-[#4B8FCB] pl-10 ${
-                      errors.email ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    style={tw`border p-2 h-[48px] text-[#41414D] rounded-md focus:border-2 border-[#4B8FCB] pl-10 ${errors.email ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="Enter your email"
                     onBlur={onBlur}
                     onChangeText={onChange}
@@ -100,9 +111,8 @@ const Login = ({ navigation }: any) => {
         <View style={tw`mb-4`}>
           <Text style={tw`text-[#41414D] text-[14px] font-normal pb-[4px]`}>Password</Text>
           <View
-            style={tw`relative flex-row items-center border px-2 rounded-md ${
-              errors.password ? 'border-red-500' : 'border-gray-300'
-            }`}
+            style={tw`relative flex-row items-center border px-2 rounded-md ${errors.password ? 'border-red-500' : 'border-gray-300'
+              }`}
           >
             <SvgXml xml={LockIcon} width={20} height={20} style={tw`mr-2`} />
 

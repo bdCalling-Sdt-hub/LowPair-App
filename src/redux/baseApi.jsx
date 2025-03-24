@@ -3,6 +3,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "http://10.0.80.13:9000/api",
+  // headers: {
+  //   'Content-Type': 'application/json', // Ensure proper content type
+  // },
   prepareHeaders: async (headers) => {
     const token = await AsyncStorage.getItem("token");
     if (token) {

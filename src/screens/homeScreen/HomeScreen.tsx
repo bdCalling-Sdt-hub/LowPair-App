@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import MainScreenHeader from '../../components/MainScreenHeader';
 import tw from 'twrnc';
-import {SvgXml} from 'react-native-svg';
-import {Immigration, ImmigrationactiveIcon} from '../../assets/Icons';
+import { SvgXml } from 'react-native-svg';
+import { Immigration, ImmigrationactiveIcon } from '../../assets/Icons';
 import Animated from 'react-native-reanimated';
-import {Item} from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
+import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
 import image1 from '../../assets/images/legalresource1.png';
 import image2 from '../../assets/images/Content1.png';
 import image3 from '../../assets/images/Content2.png';
@@ -21,6 +21,7 @@ import image4 from '../../assets/images/Content3.png';
 import image5 from '../../assets/images/Content4.png';
 import image6 from '../../assets/images/Content5.png';
 import { useNavigation } from '@react-navigation/native';
+import { useGetAllCategoriesQuery } from '../../redux/features/Categorys/CategoryApi';
 // Define types for legal help categories
 
 interface LegalHelpCategory {
@@ -70,7 +71,7 @@ const legalData = [
 ];
 
 const HomeScreen: React.FC = () => {
-const Navigation = useNavigation();
+  const Navigation = useNavigation();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
@@ -95,6 +96,15 @@ const Navigation = useNavigation();
     );
   };
 
+
+  const [page, setPage] = useState(1);
+  const { data, error, isLoading } = useGetAllCategoriesQuery({ page, per_page: 10 });
+
+  console.log('data', data.categories.data);
+
+  if (isLoading) return <Text>Loading...</Text>;
+  if (error) return <Text>Error fetching categories</Text>;
+
   return (
     <ScrollView style={tw`flex-1 bg-[#F5F5F7]`}>
       {/* Header */}
@@ -105,7 +115,7 @@ const Navigation = useNavigation();
         <Text
           style={[
             tw`text-white font-CrimsonPro px-12 text-[32px] font-bold text-center`,
-            {fontFamily: 'CrimsonPro'},
+            { fontFamily: 'CrimsonPro' },
           ]}>
           Find An Attorney Made Easy.
         </Text>
@@ -114,7 +124,7 @@ const Navigation = useNavigation();
           that you can focus on what matters most.
         </Text>
         <TouchableOpacity
-        onPress={()=>Navigation.navigate('Category')}
+          onPress={() => Navigation.navigate('Category')}
           style={tw`mt-6 bg-white py-2 px-4 rounded-sm shadow-lg shadow-[#00537D1A] max-w-[198px] w-full h-[40px]`}>
           <Text style={tw`text-[16px] font-bold text-[#10101E] text-center`}>
             Find your lawyer
@@ -130,7 +140,7 @@ const Navigation = useNavigation();
         </Text>
 
         <FlatList
-          data={legalHelpCategories}
+          data={data.categories.data}
           numColumns={3}
           keyExtractor={(item) => item.name}
           renderItem={({ item }) => {
@@ -143,7 +153,7 @@ const Navigation = useNavigation();
                   style={[
                     tw`h-22 rounded-lg items-center p-2 justify-center shadow-lg`,
                     {
-                      backgroundColor: isSelected ? '#1B69AD' : '#FFFFFF',
+                      backgroundColor: '#FFFFFF',
                       shadowColor: '#00537D',
                       shadowOpacity: 0.5,
                       shadowOffset: { width: 0, height: 4 },
@@ -159,12 +169,17 @@ const Navigation = useNavigation();
                       transform: [{ scale: isSelected ? 1.05 : 1 }],
                     }}
                   >
-                     <SvgXml xml={isSelected ? ImmigrationactiveIcon : Immigration} />
+                    <Image
+                      source={{ uri: item.image_icon }}  // Use the uri key for the image URL
+                      style={tw`w-[20px] h-[20px]`}  // Tailwind CSS for styling
+                      resizeMode="contain"  // Make sure the image fits inside the bounds
+                    />
+
                   </Animated.View>
                   <Text
                     style={[
                       tw`mt-1 text-center text-xs`,
-                      { color: isSelected ? '#FFFFFF' : '#10101E' },
+                      { color:'#10101E' },
                     ]}
                   >
                     {item.name}
@@ -189,7 +204,7 @@ const Navigation = useNavigation();
         <FlatList
           data={legalData}
           keyExtractor={item => item.id.toString()}
-          renderItem={({item}) => (
+          renderItem={({ item }) => (
             <View style={tw`rounded-lg overflow-hidden relative mb-4`}>
               <Image
                 source={item.image} // Use the imported image reference directly

@@ -12,13 +12,22 @@ const userApi = api.injectEndpoints({
     }),
 
     loginUser: builder.mutation({
-        query: (body) => ({
-          url: `/login`, // Send email and password as query params
-          method: "POST",
-          body,
-        }),
-        
+      query: (body) => ({
+        url: `/login`,
+        method: "POST",
+        body,
+        headers: { 'Content-Type': 'application/json' },
       }),
+      transformResponse: (response) => {
+        try {
+          return typeof response === 'string' ? JSON.parse(response) : response;
+        } catch (err) {
+          console.error('JSON Parse Error:', err);
+          return response;
+        }
+      },
+    }),
+    
 
 
 
