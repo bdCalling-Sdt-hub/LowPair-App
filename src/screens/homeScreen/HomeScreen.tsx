@@ -45,11 +45,12 @@ const HomeScreen: React.FC = () => {
   ];
 
   // Toggle selection
-  const toggleSelection = (name: string) => {
+  const toggleSelection = (id: string) => {
+    Navigation.navigate('categoryfilter',{id});
     setSelectedCategories((prevSelected) =>
-      prevSelected.includes(name)
-        ? prevSelected.filter((item) => item !== name) // Remove if already selected
-        : [...prevSelected, name] // Add if not selected
+      prevSelected.includes(id)
+        ? prevSelected.filter((item) => item !== id) // Remove if already selected
+        : [...prevSelected, id] // Add if not selected
     );
   };
 
@@ -107,14 +108,14 @@ const HomeScreen: React.FC = () => {
         <FlatList
           data={data.categories.data}
           numColumns={3}
-          keyExtractor={(item) => item.name}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => {
-            const isSelected = selectedCategories.includes(item.name);
+            const isSelected = selectedCategories.includes(item.id);
 
             return (
               <View style={tw`w-1/3 p-2`}>
                 <Pressable
-                  onPress={() => toggleSelection(item.name)}
+                  onPress={() => toggleSelection(item.id)}
                   style={[
                     tw`h-22 rounded-lg items-center p-2 justify-center shadow-lg`,
                     {
