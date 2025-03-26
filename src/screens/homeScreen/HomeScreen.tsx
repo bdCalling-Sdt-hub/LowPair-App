@@ -21,7 +21,7 @@ import image4 from '../../assets/images/Content3.png';
 import image5 from '../../assets/images/Content4.png';
 import image6 from '../../assets/images/Content5.png';
 import { useNavigation } from '@react-navigation/native';
-import { useGetAllCategoriesQuery } from '../../redux/features/Categorys/CategoryApi';
+import { useGetAllCategoriesQuery, useGetAllLeagalresourcesQuery } from '../../redux/features/Categorys/CategoryApi';
 // Define types for legal help categories
 
 interface LegalHelpCategory {
@@ -98,9 +98,16 @@ const HomeScreen: React.FC = () => {
 
 
   const [page, setPage] = useState(1);
-  const { data, error, isLoading } = useGetAllCategoriesQuery({ page, per_page: 10 });
+  const [per_page, setPerPage] = useState(10);
 
-  console.log('data', data.categories.data);
+
+  const [legalpage, setlegalPage] = useState(1);
+  const [legalper_page, legalsetPerPage] = useState(10);
+
+  const { data, error, isLoading } = useGetAllCategoriesQuery({ page, per_page });
+  const { data: legaldata, error: legalerror, isLoading: legalisLoading } = useGetAllLeagalresourcesQuery({ page: legalpage, per_page: legalper_page });
+
+  console.log('data====================', legaldata);
 
   if (isLoading) return <Text>Loading...</Text>;
   if (error) return <Text>Error fetching categories</Text>;
@@ -179,7 +186,7 @@ const HomeScreen: React.FC = () => {
                   <Text
                     style={[
                       tw`mt-1 text-center text-xs`,
-                      { color:'#10101E' },
+                      { color: '#10101E' },
                     ]}
                   >
                     {item.name}
@@ -202,26 +209,32 @@ const HomeScreen: React.FC = () => {
 
 
         <FlatList
-          data={legalData}
-          keyExtractor={item => item.id.toString()}
+          data={legaldata?.legal_resources?.data || []}
+          keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={tw`rounded-lg overflow-hidden relative mb-4`}>
+              {/* Background Image */}
               <Image
-                source={item.image} // Use the imported image reference directly
-                style={tw`w-full h-40`} // Ensure height is defined
+                source={{ uri: item?.image }}
+                style={tw`w-full h-40 `} // Placeholder background
                 resizeMode="cover"
+                onError={(e) => console.log("Image Load Error:", e.nativeEvent.error)}
               />
+
+              {/* Black Overlay */}
+              <View style={tw`absolute inset-0 bg-black opacity-40`} />
+{/* <Text>{item?.image}</Text> */}
+              {/* Text and Button */}
               <View style={tw`absolute inset-0 p-5`}>
                 <Text style={tw`text-white text-xl font-bold`}>
                   {item?.title}
                 </Text>
                 <Text style={tw`text-gray-200 text-xs font-normal mt-2`}>
-                  {item.description}
+                  {item.description?.slice(0, 120) + '...'}
                 </Text>
                 <TouchableOpacity
-                  style={tw`mt-6 bg-white py-2 px-4 rounded-lg shadow-lg shadow-[#00537D1A] max-w-[126px] w-full h-[40px]`}>
-                  <Text
-                    style={tw`text-[16px] font-bold text-[#001018] text-center`}>
+                  style={tw`mt-4 bg-white py-2 px-4 rounded-lg shadow-lg shadow-[#00537D1A] max-w-[126px] w-full h-[40px]`}>
+                  <Text style={tw`text-[16px] font-bold text-[#001018] text-center`}>
                     Read more
                   </Text>
                 </TouchableOpacity>
@@ -230,6 +243,8 @@ const HomeScreen: React.FC = () => {
           )}
           removeClippedSubviews={true}
         />
+
+
       </View>
     </ScrollView>
   );
