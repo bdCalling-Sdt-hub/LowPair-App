@@ -17,17 +17,6 @@ const Category = () => {
   const naviagation = useNavigation ();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-  const legalHelpCategories: LegalHelpCategory[] = [
-    { name: 'Immigration', icon: 'account-group' },
-    { name: 'Advance Care Planning', icon: 'file-document-edit' },
-    { name: 'Residential Real Estate', icon: 'home-city' },
-    { name: 'Wills & Trusts', icon: 'clipboard-text' },
-    { name: 'Criminal Defense', icon: 'gavel' },
-    { name: 'Family & Matrimonial', icon: 'human-male-female-child' },
-    { name: 'Commercial Real Estate', icon: 'city' },
-    { name: 'Trademarks', icon: 'trademark' },
-    { name: 'Business Formation', icon: 'briefcase' },
-  ];
 
   
     const [page, setPage] = useState(1);
@@ -36,10 +25,10 @@ const Category = () => {
     const { data, error, isLoading } = useGetAllCategoriesQuery({ page, per_page });
 
   // Toggle selection
-  const toggleSelection = (name: string) => {
-    naviagation.navigate('categoryfilter')
+  const toggleSelection = (id: string) => {
+    naviagation.navigate('categoryfilter',{id});
     setSelectedCategories((prevSelected) =>
-      prevSelected.includes(name)? prevSelected.filter((item) => item !== name)   : [...prevSelected, name] 
+      prevSelected.includes(id)? prevSelected.filter((item) => item !== id)   : [...prevSelected, id] 
     );
   };
 
@@ -56,14 +45,14 @@ const Category = () => {
         <FlatList
           data={data.categories.data}
           numColumns={3}
-          keyExtractor={(item) => item.name}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => {
-            const isSelected = selectedCategories.includes(item.name);
+            const isSelected = selectedCategories.includes(item.id);
 
             return (
               <View style={tw`w-1/3 p-2`}>
                 <Pressable
-                  onPress={() => toggleSelection(item.name)}
+                  onPress={() => toggleSelection(item.id)}
                   style={[
                     tw`h-22 rounded-lg items-center p-2 justify-center shadow-lg`,
                     {

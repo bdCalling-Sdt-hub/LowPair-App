@@ -14,12 +14,7 @@ import { SvgXml } from 'react-native-svg';
 import { Immigration, ImmigrationactiveIcon } from '../../assets/Icons';
 import Animated from 'react-native-reanimated';
 import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
-import image1 from '../../assets/images/legalresource1.png';
-import image2 from '../../assets/images/Content1.png';
-import image3 from '../../assets/images/Content2.png';
-import image4 from '../../assets/images/Content3.png';
-import image5 from '../../assets/images/Content4.png';
-import image6 from '../../assets/images/Content5.png';
+
 import { useNavigation } from '@react-navigation/native';
 import { useGetAllCategoriesQuery, useGetAllLeagalresourcesQuery } from '../../redux/features/Categorys/CategoryApi';
 // Define types for legal help categories
@@ -31,44 +26,6 @@ interface LegalHelpCategory {
 
 
 
-const legalData = [
-  {
-    id: 1,
-    title: 'Your Legal Compass',
-    description: 'Navigate complex legal matters with clarity and confidence.',
-    image: image1,
-  },
-  {
-    id: 2,
-    title: 'Know Your Rights',
-    description: 'Empower yourself with essential legal knowledge.',
-    image: image2,
-  },
-  {
-    id: 3,
-    title: 'Legal Help Made Easy',
-    description: 'Access simplified legal solutions at your fingertips.',
-    image: image3,
-  },
-  {
-    id: 4,
-    title: 'Justice For All',
-    description: 'Understanding your legal rights for a fair world.',
-    image: image4,
-  },
-  {
-    id: 5,
-    title: 'Legal Guidance 101',
-    description: 'Step-by-step guidance for everyday legal concerns.',
-    image: image5,
-  },
-  {
-    id: 6,
-    title: 'Courtroom Insights',
-    description: 'Gain valuable insights into courtroom procedures.',
-    image: image6,
-  },
-];
 
 const HomeScreen: React.FC = () => {
   const Navigation = useNavigation();
@@ -105,7 +62,7 @@ const HomeScreen: React.FC = () => {
   const [legalper_page, legalsetPerPage] = useState(10);
 
   const { data, error, isLoading } = useGetAllCategoriesQuery({ page, per_page });
-  
+
   const { data: legaldata, error: legalerror, isLoading: legalisLoading } = useGetAllLeagalresourcesQuery({ page: legalpage, per_page: legalper_page });
 
   console.log('data====================', legaldata);

@@ -1,28 +1,55 @@
-import { View, Text, TouchableOpacity, Button } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, Button, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import FiltaredHeader from '../../components/FiltaredHeader';
 import tw from '../../lib/tailwind';
 import { SvgXml } from 'react-native-svg';
 import { Doropdown } from '../../assets/Icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useFindLawyerQuery } from '../../redux/features/Categorys/CategoryApi';
 
 const Filtaredcategory = () => {
-
-    const Navigation = useNavigation();
-  const { control, handleSubmit } = useForm();
+  const route = useRoute();
+  const { id } = route.params; // Extract id from params
+  const Navigation = useNavigation();
+  
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      location: 'New Jersey', // Set default value for location
+      language: 'English'    // Set default value for language
+    }
+  });
+  
   const [openLocation, setOpenLocation] = useState(false);
   const [openLanguage, setOpenLanguage] = useState(false);
 
+
+
+  const [service_ids, setServiceIds] = useState([]);
+  const [state, setState] = useState('New Jersey');
+  const [language, setLanguage] = useState('English');
+  const { data, error, isLoading } = useFindLawyerQuery({
+    service_ids,
+    state,
+    language,
+  });
+  
+
+  // Fetch data only when queryParams is set
+
+  console.log('shobkisu',service_ids, state, language);
+
+  
+
   // Dropdown items
-  const Locateditems = [
+  const LocatedItems = [
     { label: 'New Jersey', value: 'New Jersey' },
     { label: 'New York', value: 'New York' },
     { label: 'Pennsylvania', value: 'Pennsylvania' },
     { label: 'Washington, D.C', value: 'Washington, D.C' },
   ];
 
-  const Languageitems = [
+  const LanguageItems = [
     { label: 'English', value: 'English' },
     { label: 'Spanish', value: 'Spanish' },
     { label: 'German', value: 'German' },
@@ -30,12 +57,38 @@ const Filtaredcategory = () => {
   ];
 
   // Handle form submission
-  const onSubmit = (data:any) => {
-    console.log('Form Data:', data);
-    if(data){
-        Navigation.navigate('suggestedatoreny')
+ const onSubmit = (formData) => {
+  setServiceIds(Array.isArray(formData.service_ids) ? formData.service_ids : []);
+  setState(formData.location);
+  setLanguage(formData.language);
+
+  if(data?.lawyers?.data){
+    Navigation.navigate('suggestedatoreny', { lawyers: data?.lawyers?.data });
+  }
+  if(!data?.lawyers?.data){
+    Alert.alert('No lawyers found');
+  }
+};
+
+  useEffect(() => {
+    if (data) {
+      console.log('Received data:', data);
+      // You can navigate to results screen here if needed
+      // Navigation.navigate('ResultsScreen', { lawyers: data });
     }
-  };
+  //  if(data?.lawyers?.data){
+  //    Navigation.navigate('suggestedatoreny', { lawyers: data?.lawyers?.data });
+  //  }
+
+
+
+   
+    
+  }, [data, error]);
+
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
 
   return (
     <View style={tw`bg-[#F5F5F7]`}>
@@ -53,7 +106,6 @@ const Filtaredcategory = () => {
         <Controller
           control={control}
           name="location"
-          defaultValue={Locateditems[0].label} // প্রথম আইটেমকে ডিফল্ট হিসেবে রাখুন
           render={({ field: { value, onChange } }) => (
             <View style={tw`relative`}>
               <TouchableOpacity
@@ -65,14 +117,14 @@ const Filtaredcategory = () => {
 
               {openLocation && (
                 <View style={tw`p-2 mt-1 rounded-lg bg-white border border-gray-300 absolute top-12 z-50 w-full`}>
-                  {Locateditems.map((item) => (
+                  {LocatedItems.map((item) => (
                     <TouchableOpacity
                       key={item.value}
                       onPress={() => {
-                        onChange(item.label);
+                        onChange(item.value); // Use item.value instead of item.label
                         setOpenLocation(false);
                       }}
-                      style={tw`p-2 ${value === item.label ? 'bg-red-100' : 'bg-white'}`}>
+                      style={tw`p-2 ${value === item.value ? 'bg-red-100' : 'bg-white'}`}>
                       <Text style={tw`text-gray-600`}>{item.label}</Text>
                     </TouchableOpacity>
                   ))}
@@ -92,7 +144,6 @@ const Filtaredcategory = () => {
         <Controller
           control={control}
           name="language"
-          defaultValue={Languageitems[0].label} 
           render={({ field: { value, onChange } }) => (
             <View style={tw`relative`}>
               <TouchableOpacity
@@ -104,14 +155,14 @@ const Filtaredcategory = () => {
 
               {openLanguage && (
                 <View style={tw`p-2 mt-1 rounded-lg bg-white border border-gray-300 absolute top-12 z-50 w-full`}>
-                  {Languageitems.map((item) => (
+                  {LanguageItems.map((item) => (
                     <TouchableOpacity
                       key={item.value}
                       onPress={() => {
-                        onChange(item.label);
+                        onChange(item.value); // Use item.value instead of item.label
                         setOpenLanguage(false);
                       }}
-                      style={tw`p-2 ${value === item.label ? 'bg-red-100' : 'bg-white'}`}>
+                      style={tw`p-2 ${value === item.value ? 'bg-red-100' : 'bg-white'}`}>
                       <Text style={tw`text-gray-600`}>{item.label}</Text>
                     </TouchableOpacity>
                   ))}
@@ -124,11 +175,12 @@ const Filtaredcategory = () => {
 
       {/* Submit Button */}
       <View style={tw`px-4 mt-4`}>
-        {/* <Button title="Submit" onPress={handleSubmit(onSubmit)} /> */}
-        <TouchableOpacity style={tw`bg-primary h-[44px] text-white flex flex-row items-center justify-center mt-[100%] rounded-lg`} onPress={handleSubmit(onSubmit)}>
-            <Text style={tw`text-[#E7E7E9] font-bold text-[16px]`}>
-                Done
-            </Text>
+        <TouchableOpacity
+          style={tw`bg-primary h-[44px] text-white flex flex-row items-center justify-center mt-[100%] rounded-lg`}
+          onPress={handleSubmit(onSubmit)}>
+          <Text style={tw`text-[#E7E7E9] font-bold text-[16px]`}>
+            Done
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
