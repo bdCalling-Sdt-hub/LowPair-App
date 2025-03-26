@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Pressable, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import tw from '../../lib/tailwind';
@@ -7,16 +7,18 @@ import { SvgXml } from 'react-native-svg';
 import { emailIcon, EyeIcon, EyeOffIcon, LockIcon, LoginIcon, rememberme } from '../../assets/Icons';
 import { useNavigation } from '@react-navigation/native';
 import { useLoginUserMutation } from '../../redux/features/users/UserApi';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface LoginProps {
   email: string;
   password: string;
 }
 
-const Login = ({ navigation }: any) => {
-  const attorney = false;
-  const user = true;
+const Login = () => {
+  const navigation = useNavigation();
+
+  const [attorney, setAttorney] = useState<boolean>(false);
+const [user, setUser] = useState<boolean>(false);
 
   // Redux API hook
   const [loginUser, { isLoading, error }] = useLoginUserMutation();
@@ -35,32 +37,36 @@ const Login = ({ navigation }: any) => {
   };
 
   const onSubmit = async (data: LoginProps) => {
-    const formData = new FormData();
-    formData.append('email', data.email);
-    formData.append('password', data.password);
-    // formData.append('role', user ? 'user' : 'attorney'); 
+    // If you use JSON instead of FormData for login
+    const loginData = {
+      email: data.email,
+      password: data.password,
+    };
 
-    console.log('Raw FormData:', formData);
+    try {
+      const response = await loginUser(loginData).unwrap();
 
-navigation.navigate(attorney ? 'attorneybottomroutes' : 'bottomroutes');
+      console.log('Login Response:', response);
+      if(response.success === true){
+        Alert.alert("Success", 'Login successful!');
+        AsyncStorage.setItem('token', response?.access_token);
+        AsyncStorage.setItem('user', response?.user);
 
+        if(response?.user?.role === 'attorney'){
+          setAttorney(true);
+        }else{
+          setUser(true);
+        }
+        navigation.navigate(attorney ? 'attorneybottomroutes' : 'bottomroutes');
+      }else{
+        Alert.alert("Error",response.message);
+      }
 
-    // try {
-    //   const response = await loginUser(formData).unwrap();
-
-    //   console.log('Raw Response:', response);
-
-    //   // const parsedData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
-
-    //   // console.log('Parsed Data:', parsedData);
-
-    //   if (response) {
-    //     navigation.navigate(attorney ? 'attorneybottomroutes' : 'bottomroutes');
-    //   }
-    // } catch (err) {
-    //   console.error('Login failed:', err);
-    // }
-
+  
+    } catch (err) {
+      console.error('Login failed:', err);
+      // You can handle the error here and show a message to the user
+    }
   };
 
   return (

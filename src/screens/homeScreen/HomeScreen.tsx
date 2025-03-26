@@ -172,6 +172,8 @@ const HomeScreen: React.FC = () => {
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={tw`rounded-lg overflow-hidden relative mb-4`}>
+
+              <Text>{item?.image}</Text>
               {/* Background Image */}
               <Image
                 source={{ uri: item?.image }}
