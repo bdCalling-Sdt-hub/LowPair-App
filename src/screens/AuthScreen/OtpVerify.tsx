@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Keyboard,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Animated, {
@@ -15,6 +16,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import tw from '../../lib/tailwind';
 import Header from '../../components/Header';
+import { useVerifyEmailMutation, useVerifyOtpMutation } from '../../redux/features/users/UserApi';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+
 
 type NavigationProp = {
   navigate: (screen: string) => void;
@@ -28,7 +34,9 @@ const OtpVerify: React.FC = ({route}: any) => {
   const inputs = useRef<TextInputRef[]>([]);
   const navigation = useNavigation<NavigationProp>();
   const translateY = useSharedValue(0);
+const [verifyOtp]=useVerifyOtpMutation();
 
+const [ verifyEmail]=useVerifyEmailMutation();
   const handleChange = (value: string, index: number) => {
     if (value.length > 1) return;
     const newCode = [...code];
@@ -41,13 +49,57 @@ const OtpVerify: React.FC = ({route}: any) => {
     if (index > 0 && !code[index]) inputs.current[index - 1]?.focus();
   };
 
-  const handleVerify = () => {
-    console.log('Entered OTP Code:', code.join(''));
-
-    if (code.join('').length === 6) {
-      navigation.navigate('createpassword');
+  const handleVerify = async () => {
+    const otpCode = code?.join('') || '';
+  
+    console.log('Entered OTP Code:', otpCode);
+  
+    if (otpCode.length !== 6) {
+      Alert.alert('Error', 'Please enter a 6-digit OTP.');
+      return;
+    }
+  
+    const data = { otp: otpCode };
+  
+    try {
+      const resp = await verifyOtp(data).unwrap();
+  
+      if (resp?.success) {
+        Alert.alert('Success', resp?.message);
+        await AsyncStorage.setItem('token', resp?.access_token);
+        navigation.navigate('createpassword');
+      } else {
+        Alert.alert('Error', resp?.message || 'OTP verification failed');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   };
+  
+
+  const handleresendOtp = async () => {
+    if (!email) {
+      Alert.alert('Error', 'Email is required');
+      return;
+    }
+  
+    const data = { email };
+  
+    try {
+      const res = await verifyEmail(data).unwrap();
+      console.log('response otp-emailverify', res);
+  
+      if (res?.success) {
+        Alert.alert('Success', res?.message);
+      } else {
+        Alert.alert('Error', res?.message || 'Failed to resend OTP');
+      }
+    } catch (error) {
+      console.error('OTP Resend Error:', error);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    }
+  };
+  
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{translateY: translateY.value}],
@@ -100,7 +152,7 @@ const OtpVerify: React.FC = ({route}: any) => {
           <Text style={tw`text-sm text-[#41414D]`}>
             Haven’t received your OTP yet?
           </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleresendOtp}>
             <Text style={tw`text-sm font-bold ml-1 text-primary`}>Re-send</Text>
             <View style={tw`h-px mt-[-2px] bg-primary`} />
           </TouchableOpacity>

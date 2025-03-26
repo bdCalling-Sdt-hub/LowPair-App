@@ -1,5 +1,5 @@
 import { View, Text, TextInput, TouchableOpacity, Pressable, Alert } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import tw from '../../lib/tailwind';
 import Header from '../../components/Header';
@@ -35,6 +35,20 @@ const [user, setUser] = useState<boolean>(false);
   const togglePasswordVisibility = () => {
     setShowPassword(prev => !prev);
   };
+
+
+
+
+// useEffect(() => {
+//   const checktoken = async () => {
+//     const token = await AsyncStorage.getItem('token');
+//     if (token) {
+//       navigation.navigate(attorney ? 'attorneybottomroutes' : 'bottomroutes');
+//     }
+//   }
+
+//   checktoken();
+// })
 
   const onSubmit = async (data: LoginProps) => {
     // If you use JSON instead of FormData for login

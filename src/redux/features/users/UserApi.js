@@ -55,7 +55,7 @@ const userApi = api.injectEndpoints({
 
 
       //IT WILL TAKE OLD PAS NEW PASS CONFIRM PASS TO UPDATE PASSWORD
-      CreateNewPassword: builder.mutation({
+      resetPassword: builder.mutation({
         query: (body) => ({
           url: `/update-password`, 
           method: "POST",
@@ -82,5 +82,5 @@ const userApi = api.injectEndpoints({
   }),
 });
 
-export const { useRegisterUserMutation, useLoginUserMutation, useVerifyEmailMutation, useVerifyOtpMutation, useCreateNewPasswordMutation, useLogoutMutation} = userApi;
+export const { useRegisterUserMutation, useLoginUserMutation, useVerifyEmailMutation, useVerifyOtpMutation, useResetPasswordMutation, useLogoutMutation} = userApi;
 export default userApi; 

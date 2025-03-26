@@ -9,7 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useRegisterUserMutation } from '../../redux/features/users/UserApi';
 
 // Define types for user role
-type UserType = 'user' | 'attorney';
+type UserType = 'user' | 'lawyer';
 
 // Define types for form state
 interface FormData {
@@ -57,11 +57,10 @@ const Register: React.FC = () => {
       const response = await registerUser(formData).unwrap();
       console.log('Registration successful', response);
     if (response.success) {
-      Alert.alert('Registration successful!');
+      navigation.navigate('otpverify', { email: formData.email });
+      Alert.alert('Registration successful!',response.message);
     }
-    if (response?.data?.success) {
-      Alert.alert('Registration successful!');
-    }
+    
     if(response.success === false){
       Alert.alert(response.message);
     }
@@ -92,7 +91,7 @@ const Register: React.FC = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={tw`flex-1 items-center py-3 ${userType === 'attorney' ? 'border-b-4 border-blue-500' : ''}`}
-            onPress={() => setUserType('attorney')}>
+            onPress={() => setUserType('lawyer')}>
             <Text style={tw`text-lg ${userType === 'attorney' ? 'text-blue-500 font-bold' : 'text-gray-500'}`}>
               I'm an attorney
             </Text>
