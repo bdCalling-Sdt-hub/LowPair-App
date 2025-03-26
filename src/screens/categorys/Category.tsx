@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Pressable } from 'react-native';
+import { View, Text, FlatList, Pressable, Image } from 'react-native';
 import React, { useState } from 'react';
 import MainScreenHeader from '../../components/MainScreenHeader';
 import tw from '../../lib/tailwind';
@@ -6,6 +6,7 @@ import Animated from 'react-native-reanimated';
 import { SvgXml } from 'react-native-svg';
 import { Immigration, ImmigrationactiveIcon } from '../../assets/Icons';
 import { useNavigation } from '@react-navigation/native';
+import { useGetAllCategoriesQuery } from '../../redux/features/Categorys/CategoryApi';
 
 interface LegalHelpCategory {
   name: string;
@@ -28,6 +29,12 @@ const Category = () => {
     { name: 'Business Formation', icon: 'briefcase' },
   ];
 
+  
+    const [page, setPage] = useState(1);
+    const [per_page,setPerPage] = useState(10);
+  
+    const { data, error, isLoading } = useGetAllCategoriesQuery({ page, per_page });
+
   // Toggle selection
   const toggleSelection = (name: string) => {
     naviagation.navigate('categoryfilter')
@@ -40,26 +47,27 @@ const Category = () => {
     <View style={tw`bg-[#F5F5F7] h-full`}>
       <MainScreenHeader />
 
-      <View style={tw`p-1`}>
-        <Text style={tw`text-[20px] pl-2 text-[#41414D] mt-[24px] font-bold mb-3`}>
+      <View style={tw`p-2`}>
+        <Text
+          style={tw`text-[20px] pl-2 text-[#121221] mt-[24px] font-bold mb-3`}>
           Find the Legal Help You Need
         </Text>
 
         <FlatList
-          data={legalHelpCategories}
-          numColumns={2}
+          data={data.categories.data}
+          numColumns={3}
           keyExtractor={(item) => item.name}
           renderItem={({ item }) => {
             const isSelected = selectedCategories.includes(item.name);
 
             return (
-              <View style={tw`w-1/2 p-2`}>
+              <View style={tw`w-1/3 p-2`}>
                 <Pressable
                   onPress={() => toggleSelection(item.name)}
                   style={[
                     tw`h-22 rounded-lg items-center p-2 justify-center shadow-lg`,
                     {
-                      backgroundColor: isSelected ? '#1B69AD' : '#FFFFFF',
+                      backgroundColor: '#FFFFFF',
                       shadowColor: '#00537D',
                       shadowOpacity: 0.5,
                       shadowOffset: { width: 0, height: 4 },
@@ -75,13 +83,17 @@ const Category = () => {
                       transform: [{ scale: isSelected ? 1.05 : 1 }],
                     }}
                   >
-                  <SvgXml xml={isSelected ? ImmigrationactiveIcon : Immigration} />
-                   
+                    <Image
+                      source={{ uri: item.image_icon }}  // Use the uri key for the image URL
+                      style={tw`w-[20px] h-[20px]`}  // Tailwind CSS for styling
+                      resizeMode="contain"  // Make sure the image fits inside the bounds
+                    />
+
                   </Animated.View>
                   <Text
                     style={[
                       tw`mt-1 text-center text-xs`,
-                      { color: isSelected ? '#FFFFFF' : '#10101E' },
+                      { color: '#10101E' },
                     ]}
                   >
                     {item.name}

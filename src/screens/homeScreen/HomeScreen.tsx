@@ -105,6 +105,7 @@ const HomeScreen: React.FC = () => {
   const [legalper_page, legalsetPerPage] = useState(10);
 
   const { data, error, isLoading } = useGetAllCategoriesQuery({ page, per_page });
+  
   const { data: legaldata, error: legalerror, isLoading: legalisLoading } = useGetAllLeagalresourcesQuery({ page: legalpage, per_page: legalper_page });
 
   console.log('data====================', legaldata);
@@ -223,7 +224,7 @@ const HomeScreen: React.FC = () => {
 
               {/* Black Overlay */}
               <View style={tw`absolute inset-0 bg-black opacity-40`} />
-{/* <Text>{item?.image}</Text> */}
+
               {/* Text and Button */}
               <View style={tw`absolute inset-0 p-5`}>
                 <Text style={tw`text-white text-xl font-bold`}>
