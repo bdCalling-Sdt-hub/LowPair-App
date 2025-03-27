@@ -173,8 +173,7 @@ const HomeScreen: React.FC = () => {
           renderItem={({ item }) => (
             <View style={tw`rounded-lg overflow-hidden relative mb-4`}>
 
-              <Text>{item?.image}</Text>
-              {/* Background Image */}
+           
               <Image
                 source={{ uri: item?.image }}
                 style={tw`w-full h-40 `} // Placeholder background

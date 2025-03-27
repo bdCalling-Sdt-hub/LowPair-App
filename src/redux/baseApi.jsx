@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://10.0.80.13:9000/api",
+  baseUrl: "http://182.252.68.227:8100/api",
   // headers: {
   //   'Content-Type': 'application/json', // Ensure proper content type
   // },
@@ -24,6 +24,6 @@ export const api = createApi({
   endpoints: () => ({}),
 });
 
-export const imageUrl = "http://10.0.80.13:9000/api";
+export const imageUrl = "http://182.252.68.227:8100/api";
 
 export default api;

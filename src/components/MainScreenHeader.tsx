@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {View, Text, Image, TouchableOpacity} from 'react-native';
 import {DrawerActions, useNavigation} from '@react-navigation/native';
 import {menuitem} from '../assets/Icons';
 import {SvgXml} from 'react-native-svg';
 import tw from '../lib/tailwind';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuthUser } from '../lib/AuthProvider';
 
 const MainScreenHeader: React.FC = () => {
   const navigation = useNavigation();
+  const [attorney, setAttorney] = useState<boolean>(false);
+  const { user } = useAuthUser();
+  console.log("userrrrrrrrrrrrrrr", user);
 
-  const attorney = false
-  const user = false
   return (
     <View
       style={{
@@ -34,11 +37,11 @@ const MainScreenHeader: React.FC = () => {
             fontWeight: 'bold',
             marginLeft: 10,
           }}>
-          Hi, Imad{' '}
+         {user?.first_name + ' ' + user?.last_name}
         </Text>
         <Text
           style={tw`text-xs text-[#929299] text-center font-normal pl-[10px]`}>
-          Los angles, USA
+          {user?.address}
         </Text>
       </View>
 
@@ -51,9 +54,11 @@ const MainScreenHeader: React.FC = () => {
           alignItems: 'center',
         }}>
         <Image
-          source={require('../assets/images/avater.png')}
-          style={{width: 40, height: 40, borderRadius: 20}}
+          source={{ uri: user?.avatar }}
+          style={{width: 40, height: 40, borderRadius: 100}}
         />
+
+       
       </TouchableOpacity>
     </View>
   );

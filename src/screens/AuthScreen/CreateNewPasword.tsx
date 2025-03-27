@@ -48,8 +48,8 @@ const CreateNewPassword = ({ navigation }: any) => {
         console.log('Reset Password Response:', response);
         if (response.success === true) {
           Alert.alert("Success", 'Password updated successfully!');
-          AsyncStorage.setItem('token', response?.access_token);
-          AsyncStorage.setItem('user', response?.user);
+          AsyncStorage.setItem('token', JSON.stringify( response?.access_token));
+          AsyncStorage.setItem('user', JSON.stringify(response?.user));
           if (response?.user?.role === 'attorney') {
             setAttorney(true);
           } else {

@@ -8,6 +8,8 @@ import { emailIcon, EyeIcon, EyeOffIcon, LockIcon, LoginIcon, rememberme } from 
 import { useNavigation } from '@react-navigation/native';
 import { useLoginUserMutation } from '../../redux/features/users/UserApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../redux/features/users/userslice';
 
 interface LoginProps {
   email: string;
@@ -16,9 +18,9 @@ interface LoginProps {
 
 const Login = () => {
   const navigation = useNavigation();
-
+const dispatch = useDispatch();
   const [attorney, setAttorney] = useState<boolean>(false);
-const [user, setUser] = useState<boolean>(false);
+const [userrole, setUserrole] = useState<boolean>(false);
 
   // Redux API hook
   const [loginUser, { isLoading, error }] = useLoginUserMutation();
@@ -39,16 +41,16 @@ const [user, setUser] = useState<boolean>(false);
 
 
 
-// useEffect(() => {
-//   const checktoken = async () => {
-//     const token = await AsyncStorage.getItem('token');
-//     if (token) {
-//       navigation.navigate(attorney ? 'attorneybottomroutes' : 'bottomroutes');
-//     }
-//   }
+useEffect(() => {
+  const checktoken = async () => {
+    const token = await AsyncStorage.getItem('token');
+    if (token) {
+      navigation.navigate(attorney ? 'attorneybottomroutes' : 'bottomroutes');
+    }
+  }
 
-//   checktoken();
-// })
+  checktoken();
+})
 
   const onSubmit = async (data: LoginProps) => {
     // If you use JSON instead of FormData for login
@@ -63,13 +65,14 @@ const [user, setUser] = useState<boolean>(false);
       console.log('Login Response:', response);
       if(response.success === true){
         Alert.alert("Success", 'Login successful!');
-        AsyncStorage.setItem('token', response?.access_token);
-        AsyncStorage.setItem('user', response?.user);
+        dispatch(setUser(response?.user));
+        AsyncStorage.setItem('token', JSON.stringify(response?.access_token));
+        AsyncStorage.setItem('user', JSON.stringify(response?.user));
 
-        if(response?.user?.role === 'attorney'){
+        if(response?.user?.role === 'lawyer'){
           setAttorney(true);
         }else{
-          setUser(true);
+          setUserrole(true);
         }
         navigation.navigate(attorney ? 'attorneybottomroutes' : 'bottomroutes');
       }else{
