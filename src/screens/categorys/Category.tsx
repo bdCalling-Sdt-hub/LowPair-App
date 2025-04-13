@@ -43,7 +43,7 @@ const Category = () => {
         </Text>
 
         <FlatList
-          data={data.categories.data}
+          data={data?.categories?.data}
           numColumns={3}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => {

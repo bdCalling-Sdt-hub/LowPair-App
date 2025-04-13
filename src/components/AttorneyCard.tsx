@@ -18,6 +18,7 @@ interface AttorneyCardProps {
   name: string;
   description: string;
   image: string;
+
   selected: boolean;
   onSelect: (id: number) => void;
   attorneyDetails: any;
@@ -56,6 +57,14 @@ const AttorneyCard: React.FC<AttorneyCardProps> = ({
 
   const handleFavoritePress = async () => {
     // console.log('detials', attorneyDetails);
+    console.log(id);
+
+    try {
+     const resp = await markAsFavorite(id).unwrap();
+     console.log(resp);
+    } catch (error) {
+      console.log(error);
+    }
 
   
 

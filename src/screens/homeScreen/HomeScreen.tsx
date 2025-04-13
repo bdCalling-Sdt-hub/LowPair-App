@@ -66,7 +66,7 @@ const HomeScreen: React.FC = () => {
 
   const { data: legaldata, error: legalerror, isLoading: legalisLoading } = useGetAllLeagalresourcesQuery({ page: legalpage, per_page: legalper_page });
 
-  console.log('data====================', legaldata);
+  console.log('data====================', legalerror);
 
   if (isLoading) return <Text>Loading...</Text>;
   if (error) return <Text>Error fetching categories</Text>;
