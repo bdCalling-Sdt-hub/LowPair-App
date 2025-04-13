@@ -34,6 +34,13 @@ const CategoryApi = api.injectEndpoints({
       }),
     }),
 
+    GetLawyerById : builder.query({
+      query: (id) => ({
+        url: `/lawyer/${id}`,
+        method: 'GET',
+      }),
+    }),
+
   }),
 });
 
@@ -41,7 +48,8 @@ export const {
   useGetAllCategoriesQuery,
   useGetAllLeagalresourcesQuery,
   useFindLawyerQuery,
-  useMarkAsFevoriteMutation
+  useMarkAsFevoriteMutation,
+  useGetLawyerByIdQuery
 } = CategoryApi;
 
 export default CategoryApi;

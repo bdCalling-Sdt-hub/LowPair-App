@@ -21,7 +21,9 @@ type DayButton = {
     endTime: string;
   };
   
-const AttorneyProfile = () => {
+const AttorneyProfile = ( { route }: any) => {
+  const { attorneyDetails } = route.params;
+  console.log('attorneyDetails----------', attorneyDetails);
 
 
     const [selectedDay, setSelectedDay] = useState<number | null>(null);
@@ -46,7 +48,7 @@ const AttorneyProfile = () => {
             source={require('../../assets/images/atonomy2.png')}
           />
           <Text style={tw`text-[20px] text-[#121221] font-bold`}>
-            Riley Morgan
+            Riley Morgans
           </Text>
           <Text style={tw`text-[14px] text-[#60606A] font-normal`}>
             Immigration, Wills & Trusts
@@ -78,7 +80,7 @@ const AttorneyProfile = () => {
           <View style={tw`flex-row items-center gap-2 `}>
             <SvgXml xml={experiencedicon} />
             <Text style={tw`text-[#41414D] text-[16px] `}>
-              4 years experience
+              4 years experienceeee
             </Text>
           </View>
 

@@ -41,7 +41,7 @@ const MainScreenHeader: React.FC = () => {
         </Text>
         <Text
           style={tw`text-xs text-[#929299] text-center font-normal pl-[10px]`}>
-          {user?.address}
+          {user?.address || 'address not set'}
         </Text>
       </View>
 

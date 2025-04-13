@@ -30,7 +30,7 @@ const Header = ({title, subtitle , isbackbutton}: HeaderProps) => {
         <Text style={tw`text-[#E7E7E9] text-10 font-bold`}>{title}</Text>
         </View>
         <Text style={tw`text-xs text-[#B6B6BA] font-normal pt-1`}>
-          {subtitle}
+          {subtitle || 'N/A'}
         </Text>
       </View>
     </LinearGradient>

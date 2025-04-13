@@ -75,6 +75,26 @@ const userApi = api.injectEndpoints({
 
 
 
+      // USR PROFILE INFORMATION HERE -------------------------------
+
+      updatePersonalInformation : builder.mutation({
+        query: (body) => ({
+          url: `/update-profile`, 
+          method: "POST",
+          body,
+        }),
+        
+      }),
+
+      updateProfilePasswod : builder.mutation({
+        query: (body) => ({
+          url: `/update-password`, 
+          method: "POST",
+          body,
+        }),
+        
+      }),
+
 
 
   
@@ -82,5 +102,5 @@ const userApi = api.injectEndpoints({
   }),
 });
 
-export const { useRegisterUserMutation, useLoginUserMutation, useVerifyEmailMutation, useVerifyOtpMutation, useResetPasswordMutation, useLogoutMutation} = userApi;
+export const { useRegisterUserMutation, useLoginUserMutation, useVerifyEmailMutation, useVerifyOtpMutation, useResetPasswordMutation, useLogoutMutation, useUpdatePersonalInformationMutation, useUpdateProfilePasswodMutation} = userApi;
 export default userApi; 

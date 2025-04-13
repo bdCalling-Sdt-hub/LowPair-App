@@ -6,9 +6,11 @@ import MainScreenHeader from '../../components/MainScreenHeader';
 import {SvgXml} from 'react-native-svg';
 import {editicon, emailIcon, locationicon, phoneicon} from '../../assets/Icons';
 import {launchImageLibrary} from 'react-native-image-picker';
+import { useAuthUser } from '../../lib/AuthProvider';
 
 const Profile = ({navigation}: any) => {
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const {user} = useAuthUser();
+  const [profileImage, setProfileImage] = useState<string | null>(user?.avatar);
 
   const handleImageUpload = () => {
     launchImageLibrary({mediaType: 'photo', quality: 1}, (response) => {
@@ -38,7 +40,7 @@ const Profile = ({navigation}: any) => {
             />
           </TouchableOpacity>
           <Text style={tw`text-[20px] text-[#121221] font-bold mt-2`}>
-            Riley Morgan
+            {user?.first_name} {user?.last_name}
           </Text>
         </View>
 
@@ -49,17 +51,17 @@ const Profile = ({navigation}: any) => {
 
           <View style={tw`flex-row items-center mt-2`}>
             <SvgXml xml={phoneicon} />
-            <Text style={tw`text-[#41414D] ml-2`}>+123 456 7892</Text>
+            <Text style={tw`text-[#41414D] ml-2`}>+{user?.phone}</Text>
           </View>
 
           <View style={tw`flex-row items-center mt-2`}>
             <SvgXml xml={emailIcon} />
-            <Text style={tw`text-[#41414D] ml-2`}>riley254@gmail.com</Text>
+            <Text style={tw`text-[#41414D] ml-2`}>{user?.email}</Text>
           </View>
 
           <View style={tw`flex-row items-center mt-2`}>
             <SvgXml xml={locationicon} />
-            <Text style={tw`text-[#41414D] ml-2`}>43/2 New York, USA</Text>
+            <Text style={tw`text-[#41414D] ml-2`}>{user?.address}</Text>
           </View>
         </View>
 

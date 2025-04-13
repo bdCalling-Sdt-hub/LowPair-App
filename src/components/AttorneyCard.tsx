@@ -1,39 +1,73 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native';
-import React from 'react';
+import { View, Text, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useEffect } from 'react';
 import { SvgXml } from 'react-native-svg';
 import { chekcircle, correctchekcircle } from '../assets/Icons';
 import tw from '../lib/tailwind';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { useMarkAsFevoriteMutation } from '../redux/features/Categorys/CategoryApi';
+
+type RootStackParamList = {
+  atonomyProfile: undefined;
+  // Add other screens here
+};
 
 interface AttorneyCardProps {
   id: number;
   name: string;
   description: string;
-  image: any;
+  image: string;
   selected: boolean;
-  onPress: () => void;
+  onSelect: (id: number) => void;
+  attorneyDetails: any;
 }
 
-const AttorneyCard: React.FC<AttorneyCardProps> = ({ name, description, image, selected, onPress, id }) => {
-  const navigation = useNavigation();
-  
-  // Use the mutation hook
+const AttorneyCard: React.FC<AttorneyCardProps> = ({ 
+  name, 
+  description, 
+  image, 
+  selected, 
+  id,
+  onSelect,
+  attorneyDetails
+}) => {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const [token, setToken] = React.useState<string>('');
   const [markAsFavorite, { isLoading }] = useMarkAsFevoriteMutation();
 
+
+
+  
+  useEffect(() => {
+    const getToken = async () => {
+      try {
+        const storedToken = await AsyncStorage.getItem('token');
+        console.log('Retrieved token:', storedToken); // Log retrieved token
+        if (storedToken) {
+          setToken(storedToken);
+        }
+      } catch (error) {
+        console.error('Error retrieving token:', error);
+      }
+    };
+    getToken();
+  }, []);
+
   const handleFavoritePress = async () => {
-    try {
-      const response = await markAsFavorite(id).unwrap(); // Call the mutation
-      console.log('Favorite marked successfully', response);
-      onPress(id); // Update selected state after marking as favorite
-    } catch (error) {
-      console.error('Error marking as favorite', error);
-    }
+    // console.log('detials', attorneyDetails);
+
+  
+
   };
 
+
+
+
+  
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate('atonomyProfile')}
+      onPress={() => navigation.navigate('atonomyProfile', { id:attorneyDetails.id })}
       style={[
         tw`flex-row items-center bg-white p-4 rounded-xl shadow-sm mb-3 border border-gray-200`,
         {
@@ -47,10 +81,12 @@ const AttorneyCard: React.FC<AttorneyCardProps> = ({ name, description, image, s
         },
       ]}
     >
-      {/* Attorney Image */}
-      <Image source={{ uri: image }} style={tw`w-24 h-24 rounded-sm mr-4`} />
+      <Image 
+        source={{ uri: image }} 
+        style={tw`w-24 h-24 rounded-sm mr-4`}
+        defaultSource={require('../assets/images/avater.png')}
+      />
 
-      {/* Attorney Details */}
       <View style={tw`flex-1`}>
         <Text style={tw`text-lg font-bold text-[#121221]`}>{name}</Text>
         <Text style={tw`text-sm text-[#60606A]`} numberOfLines={3}>
@@ -58,9 +94,21 @@ const AttorneyCard: React.FC<AttorneyCardProps> = ({ name, description, image, s
         </Text>
       </View>
 
-      {/* Favorite Button */}
-      <TouchableOpacity onPress={handleFavoritePress}>
-        <SvgXml xml={selected ? correctchekcircle : chekcircle} width="24" height="24" fill={selected ? 'green' : 'gray'} />
+      <TouchableOpacity 
+        onPress={handleFavoritePress} 
+        disabled={isLoading}
+        style={tw`ml-2`}
+      >
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#0000ff" />
+        ) : (
+          <SvgXml 
+            xml={selected ? correctchekcircle : chekcircle} 
+            width="24" 
+            height="24" 
+            fill={selected ? 'green' : 'gray'} 
+          />
+        )}
       </TouchableOpacity>
     </TouchableOpacity>
   );
