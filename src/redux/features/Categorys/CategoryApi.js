@@ -41,6 +41,14 @@ const CategoryApi = api.injectEndpoints({
       }),
     }),
 
+
+    GetFevoriteList : builder.query({
+      query: ({ page = 1, per_page = 10 }) => ({
+        url: `/user/favorite-list?per_page=${per_page}&page=${page}`,
+        method: 'GET',
+      }),
+    }),
+
   }),
 });
 
@@ -49,7 +57,8 @@ export const {
   useGetAllLeagalresourcesQuery,
   useFindLawyerQuery,
   useMarkAsFevoriteMutation,
-  useGetLawyerByIdQuery
+  useGetLawyerByIdQuery,
+  useGetFevoriteListQuery
 } = CategoryApi;
 
 export default CategoryApi;

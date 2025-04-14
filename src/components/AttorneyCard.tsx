@@ -38,7 +38,7 @@ const AttorneyCard: React.FC<AttorneyCardProps> = ({
   const [markAsFavorite, { isLoading }] = useMarkAsFevoriteMutation();
 
 
-
+console.log('attorneyDetails', attorneyDetails?.is_favorite);
   
   useEffect(() => {
     const getToken = async () => {
@@ -61,7 +61,7 @@ const AttorneyCard: React.FC<AttorneyCardProps> = ({
 
     try {
      const resp = await markAsFavorite(id).unwrap();
-     console.log(resp);
+     console.log('mark as favorite------------------', resp);
     } catch (error) {
       console.log(error);
     }
@@ -112,10 +112,10 @@ const AttorneyCard: React.FC<AttorneyCardProps> = ({
           <ActivityIndicator size="small" color="#0000ff" />
         ) : (
           <SvgXml 
-            xml={selected ? correctchekcircle : chekcircle} 
+            xml={attorneyDetails?.is_favorite ? correctchekcircle : chekcircle} 
             width="24" 
             height="24" 
-            fill={selected ? 'green' : 'gray'} 
+            fill={attorneyDetails?.is_favorite ? 'green' : 'gray'} 
           />
         )}
       </TouchableOpacity>

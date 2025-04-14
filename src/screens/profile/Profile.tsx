@@ -51,17 +51,17 @@ const Profile = ({navigation}: any) => {
 
           <View style={tw`flex-row items-center mt-2`}>
             <SvgXml xml={phoneicon} />
-            <Text style={tw`text-[#41414D] ml-2`}>+{user?.phone}</Text>
+            <Text style={tw`text-[#41414D] ml-2`}>+{user?.phone || 'N/A'}</Text>
           </View>
 
           <View style={tw`flex-row items-center mt-2`}>
             <SvgXml xml={emailIcon} />
-            <Text style={tw`text-[#41414D] ml-2`}>{user?.email}</Text>
+            <Text style={tw`text-[#41414D] ml-2`}>{user?.email || 'N/A'}</Text>
           </View>
 
           <View style={tw`flex-row items-center mt-2`}>
             <SvgXml xml={locationicon} />
-            <Text style={tw`text-[#41414D] ml-2`}>{user?.address}</Text>
+            <Text style={tw`text-[#41414D] ml-2`}>{user?.address || 'N/A'}</Text>
           </View>
         </View>
 

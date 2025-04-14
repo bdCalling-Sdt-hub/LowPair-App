@@ -47,7 +47,12 @@ const MainScreenHeader: React.FC = () => {
 
       {/* User Info */}
       <TouchableOpacity
-      onPress={()=>navigation.navigate(`${attorney ?'attornyProfile':'Profile'}`)}
+    onPress={() =>
+      navigation.navigate(attorney ? 'attornyProfile' : 'Profile', {
+        id: user?.id
+      })
+    }
+    
         style={{
           marginLeft: 'auto',
           flexDirection: 'row',

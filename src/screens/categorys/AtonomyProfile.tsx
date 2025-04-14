@@ -21,14 +21,14 @@ type DayButton = {
   };
   
 const AtonomyProfile = ({route}) => {
-  const { id } = route.params;
+const { id } = route.params;
 
 
   const {data,isLoading}=useGetLawyerByIdQuery(id);
 const attorneyDetails=data?.lawyer;
 
 const availavility = attorneyDetails?.schedule;
-  console.log('Availability:====', availavility);
+  console.log('Availability:====', attorneyDetails);
  
     const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
@@ -66,7 +66,7 @@ const availavility = attorneyDetails?.schedule;
            {attorneyDetails?.first_name} {attorneyDetails?.last_name}
           </Text>
           <Text style={tw`text-[14px] text-[#60606A] font-normal`}>
-           {attorneyDetails?.state}
+           {attorneyDetails?.state  || 'N/A'}
           </Text>
         </View>
 
