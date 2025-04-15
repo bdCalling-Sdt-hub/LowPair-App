@@ -29,16 +29,17 @@ const AvailableAttorneys = () => {
   const [perPage] = useState(10);
   const {data, isLoading, isFetching, isError, error} = useGetLawyersQuery({page, per_page: perPage});
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const availableLawyers = data?.users?.data || [];
-
+  const availableLawyers = data?.lawyers?.data || [];
+console.log('data', data);
   const loadMoreAttorneys = () => {
-    if (data?.users?.next_page_url && !isFetching) {
+    if (data?.lawyers?.next_page_url && !isFetching) {
       setPage(prev => prev + 1);
     }
   };
 
   const handleAttorneyPress = (id: number) => {
     navigation.navigate('attornyProfile', { id });
+    console.log('Attorney ID:', id);
   };
 
   if (isLoading && page === 1) {

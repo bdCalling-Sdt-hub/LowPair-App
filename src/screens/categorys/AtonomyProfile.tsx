@@ -21,7 +21,7 @@ type DayButton = {
   };
   
 const AtonomyProfile = ({route}) => {
-const { id } = route.params;
+const { id } = route.params || 319;
 
 
   const {data,isLoading}=useGetLawyerByIdQuery(id);

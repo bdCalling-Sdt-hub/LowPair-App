@@ -21,12 +21,12 @@ type DayButton = {
   };
   
 const AttorneyProfile = ({route}) => {
-const { id } = route.params || 312;
+const { id } = route.params || 319;
 
 
   const {data,isLoading}=useGetLawyerByIdQuery(id);
 const attorneyDetails=data?.lawyer;
-
+console.log('attorneyDetails', attorneyDetails);
 const availavility = attorneyDetails?.schedule;
   console.log('Availability:====', attorneyDetails);
  
