@@ -95,12 +95,19 @@ const userApi = api.injectEndpoints({
         
       }),
 
+      getLawyers: builder.query({
+        query: ({ per_page, page }) => ({
+          url: `/lawyer/all-lawyers?per_page=${per_page}&page=${page}`,
+          method: 'GET',
+        }),
+      })
+
 
 
   
       
-  }),
+  }), 
 });
 
-export const { useRegisterUserMutation, useLoginUserMutation, useVerifyEmailMutation, useVerifyOtpMutation, useResetPasswordMutation, useLogoutMutation, useUpdatePersonalInformationMutation, useUpdateProfilePasswodMutation} = userApi;
+export const { useRegisterUserMutation, useLoginUserMutation, useVerifyEmailMutation, useVerifyOtpMutation, useResetPasswordMutation, useLogoutMutation, useUpdatePersonalInformationMutation, useUpdateProfilePasswodMutation, useGetLawyersQuery} = userApi;
 export default userApi; 

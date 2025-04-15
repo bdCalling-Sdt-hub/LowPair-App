@@ -12,8 +12,7 @@ import {
   locationicon,
   phoneicon,
 } from '../../assets/Icons';
-import MainScreenHeader from '../../components/MainScreenHeader';
-import { ScrollView } from 'react-native-gesture-handler';
+import { useGetLawyerByIdQuery } from '../../redux/features/Categorys/CategoryApi';
 type DayButton = {
     id: number;
     day: string;
@@ -21,11 +20,16 @@ type DayButton = {
     endTime: string;
   };
   
-const AttorneyProfile = ( { route }: any) => {
-  const { attorneyDetails } = route.params;
-  console.log('attorneyDetails----------', attorneyDetails);
+const AttorneyProfile = ({route}) => {
+const { id } = route.params || 312;
 
 
+  const {data,isLoading}=useGetLawyerByIdQuery(id);
+const attorneyDetails=data?.lawyer;
+
+const availavility = attorneyDetails?.schedule;
+  console.log('Availability:====', attorneyDetails);
+ 
     const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
     const days: DayButton[] = [
@@ -35,9 +39,19 @@ const AttorneyProfile = ( { route }: any) => {
       {id: 4, day: 'Thursday', startTime: '01:00 AM', endTime: '02:30 PM'},
     ];
   
+    if(isLoading){
+      return(
+        <View style={tw`bg-[#F5F5F7] h-full`}>  
+          <FiltaredHeader title={'Attorney profile'} />
+          <View style={tw`flex-1 justify-center items-center`}>
+            <Text>Loading...</Text>
+          </View>
+        </View>
+      )
+    }
   return (
-    <ScrollView style={tw`bg-[#F5F5F7] h-full`}>
-      <MainScreenHeader />
+    <View style={tw`bg-[#F5F5F7] h-full`}>
+      <FiltaredHeader title={'Attorney profile'} />
 
       <View style={tw`px-6`}>
         <View
@@ -45,13 +59,14 @@ const AttorneyProfile = ( { route }: any) => {
           <Image
             height={152}
             width={152}
-            source={require('../../assets/images/atonomy2.png')}
+            style={tw`rounded-full`}
+            source={(attorneyDetails?.avatar) ? {uri: attorneyDetails?.avatar} : require('../../assets/images/atonomy2.png')}
           />
           <Text style={tw`text-[20px] text-[#121221] font-bold`}>
-            Riley Morgans
+           {attorneyDetails?.first_name} {attorneyDetails?.last_name}
           </Text>
           <Text style={tw`text-[14px] text-[#60606A] font-normal`}>
-            Immigration, Wills & Trusts
+           {attorneyDetails?.state  || 'N/A'}
           </Text>
         </View>
 
@@ -62,104 +77,95 @@ const AttorneyProfile = ( { route }: any) => {
 
           <View style={tw`flex-row items-center gap-2 `}>
             <SvgXml xml={phoneicon} />
-            <Text style={tw`text-[#41414D] text-[16px] `}>+123 456 7892</Text>
+            <Text style={tw`text-[#41414D] text-[16px] `}>{attorneyDetails?.phone || 'N/A'}</Text>
           </View>
 
           <View style={tw`flex-row items-center gap-2 `}>
             <SvgXml xml={emailIcon} />
             <Text style={tw`text-[#41414D] text-[16px] `}>
-              riley254@gmail.com
+              {attorneyDetails?.email || 'N/A'}
             </Text>
           </View>
           <View style={tw`flex-row items-center gap-2 `}>
             <SvgXml xml={jobicon} />
             <Text style={tw`text-[#41414D] text-[16px] `}>
-              Riley & Associate Law Firm
+              {attorneyDetails?.categories}
             </Text>
           </View>
           <View style={tw`flex-row items-center gap-2 `}>
             <SvgXml xml={experiencedicon} />
             <Text style={tw`text-[#41414D] text-[16px] `}>
-              4 years experienceeee
+             {attorneyDetails?.experience}
             </Text>
           </View>
 
           <View style={tw`flex-row items-center gap-2 `}>
             <SvgXml xml={locationicon} />
-            <Text style={tw`text-[#41414D] text-[16px] `}>New York</Text>
+            <Text style={tw`text-[#41414D] text-[16px] `}>{attorneyDetails?.state}</Text>
           </View>
           <View style={tw`flex-row items-center gap-2 `}>
             <SvgXml xml={glovalicon} />
-            <Text style={tw`text-[#41414D] text-[16px] `}>English</Text>
+            <Text style={tw`text-[#41414D] text-[16px] `}>
+              {attorneyDetails?.languages}
+            </Text>
           </View>
           <View style={tw`flex-row items-center gap-2 `}>
             <SvgXml xml={Linkicon} />
             <Text style={tw`text-[#1E73BE] text-[16px] `}>
-              www.websitedomain.com
+              {attorneyDetails?.website || 'N/A'}
             </Text>
           </View>
         </View>
 
-        
+        {/* TO DO AVAILAVILITY SECTION  WHEN CLICK ON ANY DAYS BUTTON THEN IN THE BOTTOM WILL SHOW THIS FORMT : .STARTING TIME - 10:00 AM .ENDING TIME - 02:30PM AND THE BUTTONWILLE BE CHAKMARKED  */}
 
         <View style={tw`bg-[#F5F5F7] h-full`}>
 
 
-      <View style={tw`mt-4`}>
-        <Text style={tw`text-lg text-[#121221] pb-1 font-bold`}>
-          Availability
-        </Text>
-        
-        {/* Days row */}
-        <View style={tw`flex-row gap-1 mt-2`}>
-          {days.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              onPress={() => setSelectedDay(item.id)}
-              style={tw`${
-                selectedDay === item.id
-                  ? 'bg-[#1E73BE]'
-                  : 'bg-white '
-              } px-[14px] py-2 rounded-full border border-[#E5E5E5]`}>
-              <Text 
-                style={tw` font-bold text-sm ${
-                  selectedDay === item.id ? 'text-white' : 'text-[#1E73BE]'
-                } `}>
-                {item.day}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <View style={tw`mt-4`}>
+      <Text style={tw`text-lg text-[#121221] pb-1 font-bold`}>
+        Availability
+      </Text>
 
-        {/* Time details */}
-        {selectedDay && (
-          <View style={tw`mt-4 gap-2 flex flex-row`}>
-            <View style={tw`flex-row items-center`}>
-              <Text style={tw`text-[#60606A] text-[14px]`}>.Starting time - </Text>
-              <Text style={tw`text-[#41414D] text-[14px]`}>
-                {days.find(day => day.id === selectedDay)?.startTime}
-              </Text>
-            </View>
-            <View style={tw`flex-row items-center`}>
-              <Text style={tw`text-[#60606A] text-[14px]`}>.Ending time - </Text>
-              <Text style={tw`text-[#41414D] text-[14px]`}>
-                {days.find(day => day.id === selectedDay)?.endTime}
-              </Text>
-            </View>
-          </View>
-        )}
+      {/* Days row */}
+      <View style={tw`flex-row flex-wrap gap-2 mt-2`}>
+        {availavility?.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() => setSelectedDay(item.day)}
+            style={tw`${
+              selectedDay === item.day ? 'bg-[#1E73BE]' : 'bg-white'
+            } px-[14px] py-2 rounded-full border border-[#E5E5E5]`}>
+            <Text
+              style={tw`font-bold text-sm ${
+                selectedDay === item.day ? 'text-white' : 'text-[#1E73BE]'
+              }`}>
+              {item.day}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
-
-      <TouchableOpacity style={tw`bg-primary h-[44px] flex flex-row items-center justify-center rounded-lg my-8`}>
-        <Text style={tw`text-[16px] text-[#E7E7E9] font-bold`}>Edit attorney profile</Text>
-      </TouchableOpacity>
+      {/* Time details */}
+      {selectedDay && (
+        <View style={tw`mt-4`}>
+          <Text style={tw`text-[#60606A] text-[14px]`}>
+            Time: 
+            <Text style={tw`text-[#41414D] ml-1`}>
+              {
+                availavility?.find(item => item.day === selectedDay)?.time || ' Not Available'
+              }
+            </Text>
+          </Text>
+        </View>
+      )}
+    </View>
     </View>
 
 
 
       </View>
-    </ScrollView>
+    </View>
   );
 };
 

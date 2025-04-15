@@ -57,7 +57,7 @@ const Register: React.FC = () => {
       const response = await registerUser(formData).unwrap();
       console.log('Registration successful', response);
     if (response.success) {
-      navigation.navigate('otpverify', { email: formData.email });
+      navigation.navigate('OtpVerifyAfterRegister', { email: formData.email });
       Alert.alert('Registration successful!',response.message);
     }
     

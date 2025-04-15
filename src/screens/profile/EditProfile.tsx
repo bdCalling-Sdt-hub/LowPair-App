@@ -6,11 +6,13 @@ import { useAuthUser } from "../../lib/AuthProvider";
 import { SvgXml } from "react-native-svg";
 import { cameraicon } from "../../assets/Icons";
 import { useUpdatePersonalInformationMutation, useUpdateProfilePasswodMutation } from "../../redux/features/users/UserApi";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 
 const Profile: React.FC = () => {
   const [updatePersonalInformation] = useUpdatePersonalInformationMutation();
   const [updateProfilePasswod] = useUpdateProfilePasswodMutation();
-  const { user } = useAuthUser();
+  const { user, triggerUserRefetch } = useAuthUser();
 
   const [activeTab, setActiveTab] = useState<"info" | "password">("info");
   const [isLoading, setIsLoading] = useState(false);
@@ -26,17 +28,9 @@ const Profile: React.FC = () => {
   const [currentPassword, setCurrentPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
-
+const isFocused = useIsFocused();
   // Initialize form with user data
-  useEffect(() => {
-    if (user) {
-      setFirstName(user.first_name || "");
-      setLastName(user.last_name || "");
-      setContactNumber(user.phone || "");
-      setLocation(user.address || "");
-      setProfileImage(user.avatar || null);
-    }
-  }, [user]);
+ const navigation = useNavigation();
 
   // Handle profile image upload
   const handleImageUpload = () => {
@@ -65,8 +59,13 @@ const Profile: React.FC = () => {
 
   // Save profile changes
   const handleSaveProfile = async () => {
+
+    if(!firstname || !lastname || !contactNumber || !location){
+      Alert.alert("Error", "All fields are required");
+      return;
+    }
     const formData = new FormData();
-    formData.append("first_name", firstname);
+    formData.append("first_name", firstname); 
     formData.append("last_name", lastname);
     formData.append("phone", contactNumber);
     formData.append("address", location);
@@ -81,7 +80,14 @@ const Profile: React.FC = () => {
   
     try {
       const response = await updatePersonalInformation(formData).unwrap();
-      console.log("Success:", response);
+      AsyncStorage.setItem('user', JSON.stringify(response?.user));
+      console.log("Profile update response:", response);
+      if(response.success){
+        triggerUserRefetch();
+        Alert.alert("Success", "Profile updated successfully");
+        navigation.navigate('Profile')
+      }
+
     } catch (error) {
       console.error("Error:", error);
     }
@@ -110,7 +116,7 @@ const Profile: React.FC = () => {
         password: newPassword,
         password_confirmation: confirmPassword
       }).unwrap();
-
+      
       Alert.alert("Success", "Password updated successfully");
       setCurrentPassword("");
       setNewPassword("");
@@ -131,7 +137,7 @@ const Profile: React.FC = () => {
         <View style={tw`relative`}>
           <View style={tw`bg-gray-200 w-24 h-24 rounded-full`}>
             <Image
-              source={{ uri: profileImage || "https://via.placeholder.com/100" }}
+              source={{ uri: user?.avatar || "https://via.placeholder.com/100" }}
               style={[tw`w-full h-full rounded-full`, styles.profileImage]}
               resizeMode="cover"
             />

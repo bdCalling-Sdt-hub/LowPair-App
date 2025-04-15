@@ -1,6 +1,6 @@
 import { View, Text, TextInput, TouchableOpacity, Pressable, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, set } from 'react-hook-form';
 import tw from '../../lib/tailwind';
 import Header from '../../components/Header';
 import { SvgXml } from 'react-native-svg';
@@ -37,6 +37,31 @@ const [userrole, setUserrole] = useState<boolean>(false);
   const togglePasswordVisibility = () => {
     setShowPassword(prev => !prev);
   };
+
+
+  useEffect(() => {
+    const checkLoggedInUser = async () => {
+      try {
+        const userInfo = await AsyncStorage.getItem('user');
+        const parsedUser = userInfo ? JSON.parse(userInfo) : null;
+  
+        console.log('user+++++++++++++++++++', parsedUser);
+  
+        if (parsedUser?.role === 'lawyer') {
+          setAttorney(true);
+          navigation.navigate('attorneybottomroutes');
+        } else if (parsedUser) {
+          navigation.navigate('bottomroutes');
+        }
+  
+      } catch (error) {
+        console.log("Error reading user info:", error);
+      }
+    };
+  
+    checkLoggedInUser();
+  }, []);
+  
 
 
 

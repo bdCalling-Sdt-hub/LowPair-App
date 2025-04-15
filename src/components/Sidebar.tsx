@@ -7,6 +7,7 @@ import logo from '../assets/images/Logo.png';
 import tw from '../lib/tailwind';
 import { SvgXml } from 'react-native-svg';
 import { LogoutIcon } from '../assets/Icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Sidebar: React.FC = () => {
   const navigation = useNavigation<any>();
@@ -17,14 +18,55 @@ const Sidebar: React.FC = () => {
   const [password, setPassword] = useState("");  // State for holding password input
 
   // Function to handle delete profile action
-  const handleDeleteProfile = () => {
+  const handleDeleteProfile = async () => {
     if (password) {
-      // Assuming the password is checked here
-      Alert.alert("Profile Deleted", "Your profile has been successfully deleted.");
-      setModalVisible(false);  // Close modal after delete
+      try {
+        // Remove user data from AsyncStorage
+        await AsyncStorage.multiRemove(['token', 'user']);
+        Alert.alert("Profile Deleted", "Your profile has been successfully deleted.");
+        setModalVisible(false);  // Close modal after delete
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'LoginScreen' }],
+        });
+      } catch (error) {
+        console.log("Error deleting profile:", error);
+        Alert.alert("Error", "Failed to delete profile. Please try again.");
+      }
     } else {
       Alert.alert("Error", "Please enter your password.");
     }
+  };
+
+  const handleLogout = () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Logout",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              // Remove both token and user data
+              await AsyncStorage.multiRemove(['token', 'user']);
+              // Reset navigation stack and navigate to LoginScreen
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'LoginScreen' }],
+              });
+            } catch (error) {
+              console.log("Error during logout:", error);
+              Alert.alert("Error", "Failed to logout. Please try again.");
+            }
+          }
+        }
+      ]
+    );
   };
 
   return (
@@ -52,7 +94,7 @@ const Sidebar: React.FC = () => {
       </View>
 
       {/* Logout */}
-      <TouchableOpacity style={{ marginTop: 20 }}>
+      <TouchableOpacity onPress={handleLogout} style={{ marginTop: 20 }}>
         <View style={tw`flex flex-row items-center`}>
           <SvgXml xml={LogoutIcon} style={tw`mr-1`} />
           <Text style={tw`text-red text-[16px] font-normal`}>

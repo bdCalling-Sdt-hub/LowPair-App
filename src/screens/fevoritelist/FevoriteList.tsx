@@ -1,67 +1,101 @@
-import { View, Text, FlatList } from 'react-native';
-import React, { useState } from 'react';
-import FiltaredHeader from '../../components/FiltaredHeader';
-import AttorneyCard from '../../components/AttorneyCard';
+import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
 import tw from '../../lib/tailwind';
-
-import atornyimg1 from '../../assets/images/Attorny1.png'
-import atornyimg2 from '../../assets/images/atonomy2.png'
-import { ScrollView } from 'react-native-gesture-handler';
 import FevoriteListCard from '../../components/FevoriteListCard';
 import { useGetFevoriteListQuery } from '../../redux/features/Categorys/CategoryApi';
-
-
+import MainScreenHeader from '../../components/MainScreenHeader';
 
 const FevoriteList = () => {
-
   const [page, setPage] = useState(1);
-  const [per_page, setPerPage] = useState(10);
+  const [perPage] = useState(20); // Made constant if not changing
+  const [combinedData, setCombinedData] = useState([]); // Stores all loaded data
 
-  const { data, isLoading } = useGetFevoriteListQuery({ page, per_page });
-  console.log('dataaaaaaaaaaaaaaaaa', data);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const handleSelect = (id: string) => {
-    setSelectedIds(prevSelectedIds =>
-      prevSelectedIds.includes(id)
-        ? prevSelectedIds.filter(selectedId => selectedId !== id) // Deselect if already selected
-        : [...prevSelectedIds, id] // Select if not already selected
-    );
+  const { data, isLoading, isFetching, error } = useGetFevoriteListQuery(
+    { page, per_page: perPage },
+    { refetchOnMountOrArgChange: true }
+  );
+
+  // Combine new data with existing data
+  useEffect(() => {
+    if (data?.favoriteList?.data) {
+      setCombinedData(prev => {
+        // Only add new data if page changed
+        if (page === 1) return data.favoriteList.data;
+        return [...prev, ...data.favoriteList.data];
+      });
+    }
+  }, [data, page]);
+
+  const renderItem = useCallback(({ item }) => (
+    <FevoriteListCard item={item} />
+  ), []);
+
+  const keyExtractor = useCallback((item) => item.id.toString(), []);
+
+  const handleNextPage = () => {
+    if (!isFetching) {
+      setPage(prev => prev + 1);
+    }
   };
 
+  const handlePrevPage = () => {
+    if (page > 1 && !isFetching) {
+      setPage(prev => prev - 1);
+    }
+  };
 
-  console.log('selectedids', selectedIds);
-
-
-  if (isLoading) {
+  if (isLoading && page === 1) {
     return (
-      <View style={tw`flex-1 bg-[#F5F5F7]`}>
-        <FiltaredHeader title={'Favorite list'} />
-        <View style={tw`flex-1 justify-center items-center`}>
-          <Text>Loading...</Text>
-        </View>
+      <View style={tw`flex-1 justify-center items-center`}>
+        <ActivityIndicator size="large" />
       </View>
     );
   }
-  return (
-    <ScrollView style={tw` bg-[#F5F5F7] `}>
-      <FiltaredHeader title={'Favorite list'} />
 
-      <View style={tw`p-2`}>
-        <FlatList
-          data={data?.favoriteList?.data}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <FevoriteListCard
-              item={item} 
-              {...item}
-              onPress={() => handleSelect(item.id)}
-            />
-          )}
-        />
-
+  if (error) {
+    return (
+      <View style={tw`flex-1 justify-center items-center`}>
+        <Text>Error loading data</Text>
       </View>
+    );
+  }
 
-    </ScrollView>
+  return (
+    <View style={tw`flex-1 bg-[#F5F5F7]`}>
+      <MainScreenHeader/>
+      <FlatList
+        data={combinedData}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        initialNumToRender={10}
+        windowSize={5}
+        ListEmptyComponent={<Text>No items found</Text>}
+      />
+
+      <View style={tw`p-2 bg-white border-t border-gray-200`}>
+        <View style={tw`flex-row justify-between`}>
+          <TouchableOpacity
+            onPress={handlePrevPage}
+            disabled={page === 1 || isFetching}
+            style={tw`px-4 py-2 rounded ${(page === 1 || isFetching) ? 'bg-gray-200' : 'bg-blue-500'}`}
+          >
+            <Text style={tw`${(page === 1 || isFetching) ? 'text-gray-500' : 'text-white'}`}>Previous</Text>
+          </TouchableOpacity>
+          
+          <Text style={tw`self-center`}>
+            Page {page}
+          </Text>
+          
+          <TouchableOpacity
+            onPress={handleNextPage}
+            disabled={isFetching}
+            style={tw`px-4 py-2 rounded ${isFetching ? 'bg-gray-200' : 'bg-blue-500'}`}
+          >
+            <Text style={tw`${isFetching ? 'text-gray-500' : 'text-white'}`}>Next</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
   );
 };
 

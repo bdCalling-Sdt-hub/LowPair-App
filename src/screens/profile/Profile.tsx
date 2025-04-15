@@ -29,7 +29,7 @@ const Profile = ({navigation}: any) => {
       <MainScreenHeader />
       <View style={tw`p-4`}>
         <View style={tw`flex items-center justify-center`}>
-          <TouchableOpacity onPress={handleImageUpload}>
+          <TouchableOpacity >
             <Image
               source={
                 profileImage
