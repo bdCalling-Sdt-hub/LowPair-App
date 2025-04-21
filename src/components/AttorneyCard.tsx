@@ -31,7 +31,8 @@ const AttorneyCard: React.FC<AttorneyCardProps> = ({
   selected, 
   id,
   onSelect,
-  attorneyDetails
+  attorneyDetails,
+
 }) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [token, setToken] = React.useState<string>('');
@@ -66,8 +67,6 @@ console.log('attorneyDetails', attorneyDetails?.is_favorite);
       console.log(error);
     }
 
-  
-
   };
 
 
@@ -76,7 +75,7 @@ console.log('attorneyDetails', attorneyDetails?.is_favorite);
   
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate('atonomyProfile', { id:attorneyDetails.id })}
+      onPress={() => navigation.navigate('atonomyProfile', { id:attorneyDetails.id || id })}
       style={[
         tw`flex-row items-center bg-white p-4 rounded-xl shadow-sm mb-3 border border-gray-200`,
         {

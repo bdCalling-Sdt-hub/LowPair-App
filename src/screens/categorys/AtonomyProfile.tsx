@@ -25,8 +25,8 @@ const { id } = route.params || 319;
 
 
   const {data,isLoading}=useGetLawyerByIdQuery(id);
-const attorneyDetails=data?.lawyer;
-
+const attorneyDetails=data?.lawyer || data?.user;
+console.log('userasdf',data);
 const availavility = attorneyDetails?.schedule;
   console.log('Availability:====', attorneyDetails);
  
@@ -63,8 +63,11 @@ const availavility = attorneyDetails?.schedule;
             source={(attorneyDetails?.avatar) ? {uri: attorneyDetails?.avatar} : require('../../assets/images/atonomy2.png')}
           />
           <Text style={tw`text-[20px] text-[#121221] font-bold`}>
-           {attorneyDetails?.first_name} {attorneyDetails?.last_name}
+           {attorneyDetails?.first_name} {attorneyDetails?.last_name } 
           </Text>
+
+        
+          
           <Text style={tw`text-[14px] text-[#60606A] font-normal`}>
            {attorneyDetails?.state  || 'N/A'}
           </Text>

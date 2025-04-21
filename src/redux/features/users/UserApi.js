@@ -73,7 +73,12 @@ const userApi = api.injectEndpoints({
         
       }),
 
-
+      GetMyprofile: builder.query({
+        query: () => ({
+          url: `/user/profile`, 
+        }),
+        
+      }),
 
       // USR PROFILE INFORMATION HERE -------------------------------
 
@@ -83,6 +88,7 @@ const userApi = api.injectEndpoints({
           method: "POST",
           body,
         }),
+        providesTags: ['User'],
         
       }),
 
@@ -92,6 +98,7 @@ const userApi = api.injectEndpoints({
           method: "POST",
           body,
         }),
+        providesTags: ['User'],
         
       }),
 
@@ -100,14 +107,18 @@ const userApi = api.injectEndpoints({
           url: `/lawyer/all-lawyers?per_page=${per_page}&page=${page}`,
           method: 'GET',
         }),
-      })
+        invalidatesTags: ['Lawyer'],
+      }),
 
-
-
-  
-      
+      getuserinfoById: builder.query({
+        query: (id) => ({
+          url: `/user/${id}`,
+          method: 'GET',
+        }),
+        invalidatesTags: ['User'],
+      }),
   }), 
 });
 
-export const { useRegisterUserMutation, useLoginUserMutation, useVerifyEmailMutation, useVerifyOtpMutation, useResetPasswordMutation, useLogoutMutation, useUpdatePersonalInformationMutation, useUpdateProfilePasswodMutation, useGetLawyersQuery} = userApi;
+export const { useRegisterUserMutation, useLoginUserMutation, useVerifyEmailMutation, useVerifyOtpMutation, useResetPasswordMutation, useLogoutMutation, useUpdatePersonalInformationMutation, useUpdateProfilePasswodMutation, useGetLawyersQuery, useGetMyprofileQuery, useGetuserinfoByIdQuery} = userApi;
 export default userApi; 

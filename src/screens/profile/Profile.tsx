@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, Image, TouchableOpacity, Alert} from 'react-native';
 import tw from '../../lib/tailwind';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -7,9 +7,28 @@ import {SvgXml} from 'react-native-svg';
 import {editicon, emailIcon, locationicon, phoneicon} from '../../assets/Icons';
 import {launchImageLibrary} from 'react-native-image-picker';
 import { useAuthUser } from '../../lib/AuthProvider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profile = ({navigation}: any) => {
-  const {user} = useAuthUser();
+  const { user } = useAuthUser();
+  const [userinfo, setUserinfo] = useState<string>('');
+  useEffect(() => {
+    const checkLoggedInUser = async () => {
+      try {
+        const userInfo = await AsyncStorage.getItem('user');
+        const parsedUser = userInfo ? JSON.parse(userInfo) : null;
+
+        console.log('user+++++++++++++++++++', parsedUser);
+        setUserinfo(parsedUser);
+       
+
+      } catch (error) {
+        console.log("Error reading user info:", error);
+      }
+    };
+
+    checkLoggedInUser();
+  }, [user]);
   const [profileImage, setProfileImage] = useState<string | null>(user?.avatar);
 
   const handleImageUpload = () => {
@@ -26,22 +45,24 @@ const Profile = ({navigation}: any) => {
 
   return (
     <ScrollView style={tw`bg-white h-full`}>
-      <MainScreenHeader />
+      <MainScreenHeader  />
       <View style={tw`p-4`}>
         <View style={tw`flex items-center justify-center`}>
           <TouchableOpacity >
             <Image
               source={
-                profileImage
-                  ? {uri: profileImage}
+               userinfo?.avatar
+                  ? {uri:userinfo?.avatar}
                   : require('../../assets/images/avater.png')
               }
               style={tw`w-24 h-24 rounded-full`}
             />
           </TouchableOpacity>
           <Text style={tw`text-[20px] text-[#121221] font-bold mt-2`}>
-            {user?.first_name} {user?.last_name}
+            {userinfo?.first_name} {userinfo?.last_name}
           </Text>
+
+         
         </View>
 
         <View style={tw`mt-8`}>
@@ -51,17 +72,17 @@ const Profile = ({navigation}: any) => {
 
           <View style={tw`flex-row items-center mt-2`}>
             <SvgXml xml={phoneicon} />
-            <Text style={tw`text-[#41414D] ml-2`}>+{user?.phone || 'N/A'}</Text>
+            <Text style={tw`text-[#41414D] ml-2`}>+{userinfo?.phone || 'N/A'}</Text>
           </View>
 
           <View style={tw`flex-row items-center mt-2`}>
             <SvgXml xml={emailIcon} />
-            <Text style={tw`text-[#41414D] ml-2`}>{user?.email || 'N/A'}</Text>
+            <Text style={tw`text-[#41414D] ml-2`}>{userinfo?.email || 'N/A'}</Text>
           </View>
 
           <View style={tw`flex-row items-center mt-2`}>
             <SvgXml xml={locationicon} />
-            <Text style={tw`text-[#41414D] ml-2`}>{user?.address || 'N/A'}</Text>
+            <Text style={tw`text-[#41414D] ml-2`}>{userinfo?.address || 'N/A'}</Text>
           </View>
         </View>
 

@@ -38,7 +38,7 @@ console.log('data', data);
   };
 
   const handleAttorneyPress = (id: number) => {
-    navigation.navigate('attornyProfile', { id });
+    navigation.navigate('atonomyProfile', { id });
     console.log('Attorney ID:', id);
   };
 

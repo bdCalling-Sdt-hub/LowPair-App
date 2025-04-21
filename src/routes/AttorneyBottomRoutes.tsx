@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {SvgXml} from 'react-native-svg';
@@ -11,10 +11,29 @@ import {
 } from '../assets/Icons';
 import AttorneyHomeScreen from '../screens/Attorneyscreen/AttorneyHomeScreen';
 import AttorneyProfile from '../screens/Attorneyscreen/AttorneyProfile';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
+
 function CustomTabBar({state, descriptors, navigation}: any) {
+
+  const isFocused = useIsFocused();
+
+  const [user, setUser] = React.useState(null);
+  useEffect(() => {
+    const logdinuser = async () => {
+      try {
+        const userInfo = await AsyncStorage.getItem('user');
+        const parsedUser = userInfo ? JSON.parse(userInfo) : null;
+        setUser(parsedUser);
+      } catch (error) {
+        console.log('Error reading user info:', error);
+      }
+    }
+    logdinuser();
+  }, [isFocused]);
   return (
     <View style={tw`flex-row justify-around px-4 h-16 items-center bg-white`}>
       {state.routes.map((route: any, index: number) => {
@@ -30,7 +49,7 @@ function CustomTabBar({state, descriptors, navigation}: any) {
 
           if (!isFocused && !event.defaultPrevented) {
             // Navigate to the route associated with the tab
-            navigation.navigate(route.name);
+            navigation.navigate(route.name, { id: user?.id});
           }
         };
 
@@ -40,7 +59,7 @@ function CustomTabBar({state, descriptors, navigation}: any) {
           case 'Home':
             icon = isFocused ? homeiconactive : homeicon;
             break;
-          case 'attornyProfile':
+          case 'atonomyProfile':
             icon = isFocused ? profileiconactive : profileicon;
             break;
           default:
@@ -88,7 +107,7 @@ const AttorneyBottomRoutes = () => {
       />
 
       <Tab.Screen
-        name="attornyProfile"
+        name="atonomyProfile"
         component={AttorneyProfile}
         options={{
           tabBarLabel: 'Profile',

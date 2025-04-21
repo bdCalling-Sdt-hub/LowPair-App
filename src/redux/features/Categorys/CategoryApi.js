@@ -24,6 +24,7 @@ const CategoryApi = api.injectEndpoints({
           language,
         },
       }),
+      providesTags: ['Lawyer'],
     }),
 
     MarkAsFevorite : builder.mutation({
@@ -32,6 +33,7 @@ const CategoryApi = api.injectEndpoints({
         method: 'POST',
         body: { lawyer_id: id },
       }),
+      providesTags: ['Fevorite'],
     }),
 
     GetLawyerById : builder.query({
@@ -49,6 +51,22 @@ const CategoryApi = api.injectEndpoints({
       }),
     }),
 
+    GetAllCategory : builder.query({
+      query: () => ({
+        url: `/admin/categories?per_page=9999999`,
+        method: 'GET',
+      }),
+    }),
+
+
+    createYourOwnProfile : builder.mutation({
+      query: (data) => ({
+        url: `/lawyer/update-profile`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+
   }),
 });
 
@@ -58,7 +76,9 @@ export const {
   useFindLawyerQuery,
   useMarkAsFevoriteMutation,
   useGetLawyerByIdQuery,
-  useGetFevoriteListQuery
+  useGetFevoriteListQuery,
+  useGetAllCategoryQuery,
+  useCreateYourOwnProfileMutation
 } = CategoryApi;
 
 export default CategoryApi;

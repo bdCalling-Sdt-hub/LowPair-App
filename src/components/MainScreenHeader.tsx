@@ -24,31 +24,31 @@ const MainScreenHeader: React.FC = () => {
   const navigation = useNavigation<NavigationProps>();
   const [attorney, setAttorney] = useState<boolean>(false);
   const { user } = useAuthUser();
+  const [userinfo, setUserinfo] = useState<string>('');
   useEffect(() => {
     const checkLoggedInUser = async () => {
       try {
         const userInfo = await AsyncStorage.getItem('user');
         const parsedUser = userInfo ? JSON.parse(userInfo) : null;
-  
+
         console.log('user+++++++++++++++++++', parsedUser);
-  
+        setUserinfo(parsedUser);
         if (parsedUser?.role === 'lawyer') {
           setAttorney(true);
-       
         }
-  
+
       } catch (error) {
         console.log("Error reading user info:", error);
       }
     };
-  
+
     checkLoggedInUser();
-  }, []);
-  
+  }, [user]);
+
   const handleProfilePress = () => {
     if (!user?.id) return;
-    
-    const screenName = attorney ? 'attornyProfile' : 'Profile';
+
+    const screenName = attorney ? 'atonomyProfile' : 'Profile';
     navigation.navigate(screenName, { id: user.id });
   };
 
@@ -76,11 +76,11 @@ const MainScreenHeader: React.FC = () => {
             fontWeight: 'bold',
             marginLeft: 10,
           }}>
-          {`${user?.first_name || ''} ${user?.last_name || ''}`}
+          {`${userinfo?.first_name || ''} ${userinfo?.last_name || ''}`}
         </Text>
         <Text
           style={tw`text-xs text-[#929299] text-center font-normal pl-[10px]`}>
-          {user?.address || 'address not set'}
+          {userinfo?.address || 'address not set'}
         </Text>
       </View>
 
@@ -93,7 +93,7 @@ const MainScreenHeader: React.FC = () => {
           alignItems: 'center',
         }}>
         <Image
-          source={{ uri: user?.avatar }}
+          source={{ uri: userinfo?.avatar }}
           style={{ width: 40, height: 40, borderRadius: 100 }}
         />
       </TouchableOpacity>

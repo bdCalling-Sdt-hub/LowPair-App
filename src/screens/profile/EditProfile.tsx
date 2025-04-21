@@ -84,12 +84,12 @@ const isFocused = useIsFocused();
       console.log("Profile update response:", response);
       if(response.success){
         triggerUserRefetch();
-        Alert.alert("Success", "Profile updated successfully");
-        navigation.navigate('Profile')
+        Alert.alert("Success", response.message);
+        navigation.navigate(`${user?.role === "user" ? "Profile" : "attornyProfile"}`, { id: user?.id });
       }
 
     } catch (error) {
-      console.error("Error:", error);
+      Alert.alert("Error",error?.data?.message);
     }
   };
 
@@ -117,14 +117,14 @@ const isFocused = useIsFocused();
         password_confirmation: confirmPassword
       }).unwrap();
       
-      Alert.alert("Success", "Password updated successfully");
+      Alert.alert("Success", response.message);
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
       console.log("Password update response:", response);
     } catch (error) {
+      Alert.alert("Error",error?.data?.message);
       console.error("Password update error:", error);
-      Alert.alert("Error", "Failed to update password");
     } finally {
       setIsLoading(false);
     }

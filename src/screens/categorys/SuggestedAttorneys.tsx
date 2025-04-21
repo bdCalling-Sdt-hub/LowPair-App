@@ -41,7 +41,7 @@ const SuggestedAttorneys: React.FC = () => {
             description={`${item.experience} experience in ${item.categories.join(', ')}`}
             image={item.avatar}
             selected={selectedIds.includes(item.id)}
-            onSelect={handleSelect} // Changed from onPress to onSelect for clarity
+            onSelect={handleSelect} 
             attorneyDetails={item}
           />
         )}

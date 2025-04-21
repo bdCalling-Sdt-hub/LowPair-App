@@ -51,6 +51,16 @@ const AuthStack = () => (
     <Stack.Screen name="categoryfilter" component={Filtaredcategory}/>
     <Stack.Screen name="suggestedatoreny" component={SuggestedAttorneys}/>
     <Stack.Screen name="atonomyProfile" component={AtonomyProfile}/>
+
+
+
+
+
+
+
+
+
+
     <Stack.Screen name="attornyProfile" component={AttorneyProfile}/>
     <Stack.Screen name="Favorite list" component={FevoriteList}/>
     <Stack.Screen name="AvailableAttorneys" component={AvailavleAttorneys}/>
