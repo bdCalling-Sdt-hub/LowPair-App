@@ -1,4 +1,3 @@
-
 module.exports = {
   theme: {
     screens: {
@@ -9,20 +8,18 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-     
         RobotoRegular: 'Roboto_Regular',
         RobotoExtraBold: 'Roboto-ExtraBold',
         RobotoBold: 'Roboto_Condensed-Bold',
         Roboto: 'Roboto',
         RobotoExtraLight: 'Roboto-ExtraLight',
-       RobotoLight: 'Roboto-Light',
-       RobotoMedium: 'Roboto-Medium',
-       RobotoRegular: 'Roboto-Regular',
-       RobotoSemiBold: 'Roboto-SemiBold',
-       RobotoThin: 'Roboto-Thin',
-       CrimsonPro:"CrimsonPro-SemiBold",
+        RobotoLight: 'Roboto-Light',
+        RobotoMedium: 'Roboto-Medium',
+        RobotoItalic: 'Roboto-Italic',
+        RobotoSemiBold: 'Roboto-SemiBold',
+        RobotoThin: 'Roboto-Thin',
+        CrimsonPro: 'CrimsonPro-SemiBold',
       },
-
       colors: {
         primary: '#1B69AD',
         white: '#F2F3F7',
@@ -58,5 +55,4 @@ module.exports = {
       },
     },
   },
- 
 };
