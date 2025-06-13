@@ -7,14 +7,15 @@ import {
   Image,
   ScrollView,
   Pressable,
+  ImageBackground,
 } from 'react-native';
 import MainScreenHeader from '../../components/MainScreenHeader';
 import tw from 'twrnc';
 import { SvgXml } from 'react-native-svg';
-import { Immigration, ImmigrationactiveIcon } from '../../assets/Icons';
+import { Immigration, ImmigrationactiveIcon, logoIcon } from '../../assets/Icons';
 import Animated from 'react-native-reanimated';
 import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
-
+import bgImage from '../../assets/images/banner.png'
 import { useNavigation } from '@react-navigation/native';
 import { useGetAllCategoriesQuery, useGetAllLeagalresourcesQuery } from '../../redux/features/Categorys/CategoryApi';
 // Define types for legal help categories
@@ -46,7 +47,7 @@ const HomeScreen: React.FC = () => {
 
   // Toggle selection
   const toggleSelection = (id: string) => {
-    Navigation.navigate('categoryfilter',{id});
+    Navigation.navigate('categoryfilter', { id });
     setSelectedCategories((prevSelected) =>
       prevSelected.includes(id)
         ? prevSelected.filter((item) => item !== id) // Remove if already selected
@@ -77,26 +78,26 @@ const HomeScreen: React.FC = () => {
       <MainScreenHeader />
 
       {/* Attorney Search Section */}
-      <View style={tw`bg-[#164D8E] py-6 px-[20px]  items-center`}>
-        <Text
-          style={[
-            tw`text-white font-CrimsonPro px-12 text-[32px] font-bold text-center`,
-            { fontFamily: 'CrimsonPro' },
-          ]}>
-          Find An Attorney Made Easy.
-        </Text>
-        <Text style={tw`text-[#E7E7E9] text-sm font-normal text-center mt-2`}>
+
+
+      <ImageBackground
+        source={bgImage}
+        resizeMode="cover"
+        style={tw`pb-6 pt-2 px-[20px] items-center`}
+      >
+        <SvgXml xml={logoIcon} width={200} height={100} />
+        <Text style={tw`text-[#41414D] text-sm font-normal text-center mt-2`}>
           No hassle. No fees. We've streamlined the attorney search process so
           that you can focus on what matters most.
         </Text>
         <TouchableOpacity
           onPress={() => Navigation.navigate('Category')}
-          style={tw`mt-6 bg-white py-2 px-4 rounded-sm shadow-lg shadow-[#00537D1A] max-w-[198px] w-full h-[40px]`}>
-          <Text style={tw`text-[16px] font-bold text-[#10101E] text-center`}>
+          style={tw`mt-6 bg-[#1B69AD]  py-2 px-4 rounded-sm shadow-lg shadow-[#00537D1A] max-w-[178px] w-full h-[40px]`}>
+          <Text style={tw`text-[16px] font-bold text-white text-center`}>
             Find your lawyer
           </Text>
         </TouchableOpacity>
-      </View>
+      </ImageBackground>
 
       {/* Legal Help Categories */}
       <View style={tw`p-2`}>
@@ -136,9 +137,9 @@ const HomeScreen: React.FC = () => {
                     }}
                   >
                     <Image
-                      source={{ uri: item.image_icon }}  // Use the uri key for the image URL
-                      style={tw`w-[20px] h-[20px]`}  // Tailwind CSS for styling
-                      resizeMode="contain"  // Make sure the image fits inside the bounds
+                      source={{ uri: item.image_icon }}  
+                      style={tw`w-[20px] h-[20px]`}  
+                      resizeMode="contain" 
                     />
 
                   </Animated.View>
@@ -173,7 +174,7 @@ const HomeScreen: React.FC = () => {
           renderItem={({ item }) => (
             <View style={tw`rounded-lg overflow-hidden relative mb-4`}>
 
-           
+
               <Image
                 source={{ uri: item?.image }}
                 style={tw`w-full h-40 `} // Placeholder background

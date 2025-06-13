@@ -230,14 +230,15 @@ import {
   Image,
   ScrollView,
   Pressable,
+  ImageBackground,
 } from 'react-native';
 import MainScreenHeader from '../../components/MainScreenHeader';
 import tw from 'twrnc';
 import { SvgXml } from 'react-native-svg';
-import { Immigration, ImmigrationactiveIcon } from '../../assets/Icons';
+import { Immigration, ImmigrationactiveIcon, logoIcon } from '../../assets/Icons';
 import Animated from 'react-native-reanimated';
 import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
-
+import bgImage from '../../assets/images/banner.png'
 import { useNavigation } from '@react-navigation/native';
 import { useGetAllCategoriesQuery, useGetAllLeagalresourcesQuery } from '../../redux/features/Categorys/CategoryApi';
 // Define types for legal help categories
@@ -291,8 +292,8 @@ const AttorneyHomeScreen: React.FC = () => {
 
   console.log('data====================', legalerror);
 
-  if (isLoading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error fetching categories</Text>;
+  if (isLoading || legalisLoading) return <Text>Loading...</Text>;
+  if (error || legalerror) return <Text>Error fetching categories</Text>;
 
   return (
     <ScrollView style={tw`flex-1 bg-[#F5F5F7]`}>
@@ -300,26 +301,24 @@ const AttorneyHomeScreen: React.FC = () => {
       <MainScreenHeader />
 
       {/* Attorney Search Section */}
-      <View style={tw`bg-[#164D8E] py-6 px-[20px]  items-center`}>
-        <Text
-          style={[
-            tw`text-white font-CrimsonPro px-12 text-[32px] font-bold text-center`,
-            { fontFamily: 'CrimsonPro' },
-          ]}>
-          Find An Attorney Made Easy.
-        </Text>
-        <Text style={tw`text-[#E7E7E9] text-sm font-normal text-center mt-2`}>
+      <ImageBackground
+        source={bgImage}
+        resizeMode="cover"
+        style={tw`pb-6 pt-2 px-[20px] items-center`}
+      >
+        <SvgXml xml={logoIcon} width={200} height={100} />
+        <Text style={tw`text-[#41414D] text-sm font-normal text-center mt-2`}>
           No hassle. No fees. We've streamlined the attorney search process so
           that you can focus on what matters most.
         </Text>
         <TouchableOpacity
-          onPress={()=>Navigation.navigate('AvailableAttorneys')}
-          style={tw`mt-6 bg-white py-2 px-4 rounded-sm shadow-lg shadow-[#00537D1A] max-w-[98px] w-full h-[40px]`}>
+          onPress={() => Navigation.navigate('AvailableAttorneys')}
+          style={tw`mt-6 bg-white  py-2 px-4 shadow-lg shadow-[#00537D1A] max-w-[100px] rounded-md w-full h-[40px]`}>
           <Text style={tw`text-[16px] font-bold text-[#10101E] text-center`}>
-          Browse
+           Browse
           </Text>
         </TouchableOpacity>
-      </View>
+      </ImageBackground>
 
       {/* Legal Help Categories */}
       <View style={tw`p-2`}>
@@ -359,11 +358,10 @@ const AttorneyHomeScreen: React.FC = () => {
                     }}
                   >
                     <Image
-                      source={{ uri: item.image_icon }}  // Use the uri key for the image URL
-                      style={tw`w-[20px] h-[20px]`}  // Tailwind CSS for styling
-                      resizeMode="contain"  // Make sure the image fits inside the bounds
+                      source={{ uri: item.image_icon }}  
+                      style={tw`w-[20px] h-[20px]`} 
+                      resizeMode="contain" 
                     />
-
                   </Animated.View>
                   <Text
                     style={[
@@ -388,15 +386,11 @@ const AttorneyHomeScreen: React.FC = () => {
         </Text>
 
         {/* Legal Compass Card */}
-
-
         <FlatList
           data={legaldata?.legal_resources?.data || []}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={tw`rounded-lg overflow-hidden relative mb-4`}>
-
-           
               <Image
                 source={{ uri: item?.image }}
                 style={tw`w-full h-40 `} // Placeholder background
@@ -426,7 +420,6 @@ const AttorneyHomeScreen: React.FC = () => {
           )}
           removeClippedSubviews={true}
         />
-
 
       </View>
     </ScrollView>

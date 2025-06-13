@@ -1,26 +1,45 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, Dimensions, Modal, TextInput, Alert } from 'react-native';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
-import { useNavigation } from '@react-navigation/native';
+import { DrawerActions, useIsFocused, useNavigation } from '@react-navigation/native';
 
-import logo from '../assets/images/Logo.png';
+
+
 import tw from '../lib/tailwind';
 import { SvgXml } from 'react-native-svg';
-import { LogoutIcon } from '../assets/Icons';
+import { logoIcon, LogoutIcon } from '../assets/Icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthUser } from '../lib/AuthProvider';
 
 const Sidebar: React.FC = () => {
 
-  const { user } = useAuthUser();
+  const [user, setUser] = useState(null);
 
   const navigation = useNavigation<any>();
-  const { height } = Dimensions.get("window"); 
+  const { height } = Dimensions.get("window");
   const adjustedHeight = height - 250;
 
   const [modalVisible, setModalVisible] = useState(false);  // Modal visibility state
   const [password, setPassword] = useState("");  // State for holding password input
+const isfocused = useIsFocused();
 
+  useEffect(() => {
+    // Retrieve user data from AsyncStorage
+    AsyncStorage.getItem('user').then((userData) => {
+      if (userData) {
+        setUser(JSON.parse(userData));
+      }
+    });
+  }, [isfocused]);
+
+
+
+
+
+
+
+
+console.log('role',user);
   // Function to handle delete profile action
   const handleDeleteProfile = async () => {
     if (password) {
@@ -59,6 +78,7 @@ const Sidebar: React.FC = () => {
               // Remove both token and user data
               await AsyncStorage.multiRemove(['token', 'user']);
               // Reset navigation stack and navigate to LoginScreen
+              navigation.dispatch(DrawerActions.closeDrawer());
               navigation.reset({
                 index: 0,
                 routes: [{ name: 'LoginScreen' }],
@@ -75,29 +95,30 @@ const Sidebar: React.FC = () => {
 
 
   const userItems = ['About us', 'Legal resources', 'Disclaimers', 'Favorite list'];
-  const LawyerItems = ['About us', 'Legal resources', 'Disclaimers','Update personal information','Update password'];
+  const LawyerItems = ['About us', 'Legal resources', 'Disclaimers', 'Update personal information', 'Update password'];
   return (
     <DrawerContentScrollView contentContainerStyle={{ flex: 1, padding: 20 }}>
-      <Image source={logo} style={tw`mt-4 ml-4`} resizeMode="contain" />
+      <SvgXml xml={logoIcon} width={200} height={100} />
 
       {/* Navigation Links */}
       <View style={[tw`mt-8 pl-4`, { height: adjustedHeight }]}>
-        { user.role === 'user' ? userItems : LawyerItems.map((item, index) => (
-          <Text
-            style={tw`text-[#41414D] text-[16px] font-bold  mb-4 rounded-lg`}
-            key={index}
-            onPress={() => {
-              const screenName = item === 'Update password' || item === 'Update personal information'
-                ? 'editprofile'
-                : item;
-            
-              navigation.navigate(screenName, { title: item });
-            }}
-             // Modify to correct screen
-          >
-            {item}
-          </Text>
-        ))}
+        {
+          (user?.role === 'user' || user?.role === 'admin'? userItems : LawyerItems).map((item, index) => (
+            <Text
+              style={tw`text-[#41414D] text-[16px] font-bold  mb-4 rounded-lg`}
+              key={index}
+              onPress={() => {
+                const screenName = item === 'Update password' || item === 'Update personal information'
+                  ? 'editprofile'
+                  : item;
+
+                navigation.navigate(screenName, { title: item });
+              }}
+            // Modify to correct screen
+            >
+              {item}
+            </Text>
+          ))}
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Text
             style={tw`text-red-500 text-[16px] font-bold mb-4 rounded-lg`}
@@ -113,7 +134,7 @@ const Sidebar: React.FC = () => {
           <SvgXml xml={LogoutIcon} style={tw`mr-1`} />
           <Text style={tw`text-red text-[16px] font-normal`}>
             Log out
-          </Text>     
+          </Text>
         </View>
       </TouchableOpacity>
 

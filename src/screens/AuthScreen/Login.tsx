@@ -10,6 +10,7 @@ import { useLoginUserMutation } from '../../redux/features/users/UserApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../redux/features/users/userslice';
+import { ScrollView } from 'react-native-gesture-handler';
 
 interface LoginProps {
   email: string;
@@ -86,7 +87,6 @@ useEffect(() => {
 
     try {
       const response = await loginUser(loginData).unwrap();
-
       console.log('Login Response:', response);
       if(response.success === true){
         Alert.alert("Success", 'Login successful!');
@@ -112,7 +112,7 @@ useEffect(() => {
   };
 
   return (
-    <View style={tw`flex-1 `}>
+    <ScrollView keyboardShouldPersistTaps="always" style={tw`flex-1 `}>
       <Header title="Sign-in to your account..." isbackbutton={false} />
 
       <View style={tw`px-4 pt-[20%] pb-6`}>
@@ -197,6 +197,7 @@ useEffect(() => {
 
         {/* Submit Button */}
         <TouchableOpacity
+        disabled={isLoading}
           style={tw`bg-primary p-3 rounded-md flex flex-row items-center justify-center`}
           onPress={handleSubmit(onSubmit)}
         >
@@ -215,7 +216,7 @@ useEffect(() => {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

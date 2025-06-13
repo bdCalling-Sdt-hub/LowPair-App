@@ -1,30 +1,68 @@
-import {View, Text, Image, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
+import { View, Text, Image, TouchableOpacity, Share, Linking, Platform } from 'react-native';
+import React, { useState } from 'react';
 import FiltaredHeader from '../../components/FiltaredHeader';
 import tw from '../../lib/tailwind';
-import {SvgXml} from 'react-native-svg';
+import { SvgXml } from 'react-native-svg';
 import {
   editicon,
   emailIcon,
   experiencedicon,
   glovalicon,
   jobicon,
+  linkedinIcon,
   Linkicon,
   locationicon,
   phoneicon,
 } from '../../assets/Icons';
-import {useGetuserinfoByIdQuery} from '../../redux/features/users/UserApi';
-import {useNavigation} from '@react-navigation/native';
-import {ScrollView} from 'react-native-gesture-handler';
+import { useGetuserinfoByIdQuery } from '../../redux/features/users/UserApi';
+import { useNavigation } from '@react-navigation/native';
+import { ScrollView } from 'react-native-gesture-handler';
 
-const AttorneyProfile = ({route}) => {
-  const {id} = route.params || 319;
-  const {data: myprofile, isLoading} = useGetuserinfoByIdQuery(id);
+const AttorneyProfile = ({ route }) => {
+  const { id } = route.params || 319;
+  const { data: myprofile, isLoading } = useGetuserinfoByIdQuery(id);
   const userinfo = myprofile?.user || myprofile?.lawyer;
   const navigation = useNavigation();
   const attorneyDetails = userinfo;
   const availability = attorneyDetails?.schedule || [];
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+
+  const handleShareProfile = async () => {
+    try {
+      // Construct the profile URL (replace with your actual profile URL structure)
+      const profileUrl = `https://your-app-domain.com/profile/${id}`;
+
+      // Construct the LinkedIn share URL
+      const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`;
+
+      // Check if the LinkedIn app is installed
+      const canOpen = await Linking.canOpenURL(linkedinUrl);
+
+      if (canOpen) {
+        // Open in LinkedIn app if installed
+        await Linking.openURL(linkedinUrl);
+      } else {
+        // Fallback to web or native share dialog
+        if (Platform.OS === 'ios') {
+          // On iOS, we can use the Share API with a LinkedIn-specific message
+          await Share.share({
+            message: `Check out ${attorneyDetails?.first_name} ${attorneyDetails?.last_name}'s profile on LinkedIn: ${profileUrl}`,
+            url: profileUrl,
+          });
+        } else {
+          // On Android, open LinkedIn web
+          await Linking.openURL(linkedinUrl);
+        }
+      }
+    } catch (error) {
+      console.error('Error sharing profile:', error);
+      // Fallback to generic share dialog
+      await Share.share({
+        message: `Check out ${attorneyDetails?.first_name} ${attorneyDetails?.last_name}'s profile: ${profileUrl}`,
+        url: profileUrl,
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -38,9 +76,9 @@ const AttorneyProfile = ({route}) => {
   }
 
   return (
-    <View style={tw`flex-1 bg-[#F5F5F7]`}>
+    <ScrollView style={tw`flex-1 bg-[#F5F5F7]`}>
       <FiltaredHeader title={'Attorney profile'} />
-      
+
       <ScrollView contentContainerStyle={tw`pb-24 px-6`}>
         {/* Profile Header */}
         <View style={tw`items-center justify-center gap-1 my-10`}>
@@ -50,7 +88,7 @@ const AttorneyProfile = ({route}) => {
             style={tw`rounded-full`}
             source={
               attorneyDetails?.avatar
-                ? {uri: attorneyDetails?.avatar}
+                ? { uri: attorneyDetails?.avatar }
                 : require('../../assets/images/atonomy2.png')
             }
           />
@@ -60,8 +98,18 @@ const AttorneyProfile = ({route}) => {
           <Text style={tw`text-[14px] text-[#60606A] font-normal`}>
             {attorneyDetails?.state || 'N/A'}
           </Text>
+
+          {/* Add LinkedIn share button */}
+          <TouchableOpacity
+            onPress={handleShareProfile}
+            style={tw`mt-4 flex-row items-center bg-[#0077B5] px-4 py-2 rounded-lg`}
+          >
+            <SvgXml xml={linkedinIcon} width={20} height={20} />
+            <Text style={tw`text-white ml-2`}>Share on LinkedIn</Text>
+          </TouchableOpacity>
         </View>
 
+        {/* Rest of your existing code remains the same */}
         {/* Contact Details */}
         <View style={tw`gap-4 mb-8`}>
           <Text style={tw`text-lg text-[#121221] pb-1 font-bold`}>
@@ -140,13 +188,11 @@ const AttorneyProfile = ({route}) => {
                   <TouchableOpacity
                     key={index}
                     onPress={() => setSelectedDay(item.day)}
-                    style={tw`${
-                      selectedDay === item.day ? 'bg-[#1E73BE]' : 'bg-white'
-                    } px-[14px] py-2 rounded-full border border-[#E5E5E5]`}>
+                    style={tw`${selectedDay === item.day ? 'bg-[#1E73BE]' : 'bg-white'
+                      } px-[14px] py-2 rounded-full border border-[#E5E5E5]`}>
                     <Text
-                      style={tw`font-bold text-sm ${
-                        selectedDay === item.day ? 'text-white' : 'text-[#1E73BE]'
-                      }`}>
+                      style={tw`font-bold text-sm ${selectedDay === item.day ? 'text-white' : 'text-[#1E73BE]'
+                        }`}>
                       {item.day}
                     </Text>
                   </TouchableOpacity>
@@ -184,7 +230,7 @@ const AttorneyProfile = ({route}) => {
           </View>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

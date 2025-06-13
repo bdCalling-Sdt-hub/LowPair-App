@@ -16,28 +16,24 @@ const Filtaredcategory = () => {
   const { control, handleSubmit } = useForm({
     defaultValues: {
       location: 'New Jersey', // Set default value for location
-      language: 'English'    // Set default value for language
     }
   });
   
   const [openLocation, setOpenLocation] = useState(false);
-  const [openLanguage, setOpenLanguage] = useState(false);
 
 
 
   const [service_ids, setServiceIds] = useState([]);
   const [state, setState] = useState('New Jersey');
-  const [language, setLanguage] = useState('English');
   const { data, error, isLoading } = useFindLawyerQuery({
     service_ids,
     state,
-    language,
   });
   
 
   // Fetch data only when queryParams is set
 
-  console.log('shobkisu',service_ids, state, language);
+
 
   
 
@@ -60,7 +56,6 @@ const Filtaredcategory = () => {
  const onSubmit = (formData) => {
   setServiceIds(Array.isArray(formData.service_ids) ? formData.service_ids : []);
   setState(formData.location);
-  setLanguage(formData.language);
 
   if(data?.lawyers?.data){
     Navigation.navigate('suggestedatoreny', { lawyers: data?.lawyers?.data });
@@ -100,7 +95,7 @@ const Filtaredcategory = () => {
       {/* Location Dropdown */}
       <View style={tw`mb-6 px-4`}>
         <Text style={tw`text-[16px] font-normal text-[#121221]`}>
-          Where are you located?
+          Where are you located? 
         </Text>
 
         <Controller
@@ -136,7 +131,7 @@ const Filtaredcategory = () => {
       </View>
 
       {/* Language Dropdown */}
-      <View style={tw`px-4`}>
+      {/* <View style={tw`px-4`}>
         <Text style={tw`text-[16px] font-normal text-[#121221]`}>
           Language(s)
         </Text>
@@ -171,7 +166,7 @@ const Filtaredcategory = () => {
             </View>
           )}
         />
-      </View>
+      </View> */}
 
       {/* Submit Button */}
       <View style={tw`px-4 mt-4`}>
