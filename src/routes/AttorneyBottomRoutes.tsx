@@ -1,24 +1,23 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {SvgXml} from 'react-native-svg';
-import tw from '../lib/tailwind';
 import {
   homeicon,
+  homeiconactive,
   profileicon,
   profileiconactive,
-  homeiconactive,
 } from '../assets/Icons';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {useIsFocused} from '@react-navigation/native';
+import {SvgXml} from 'react-native-svg';
+import tw from '../lib/tailwind';
 import AttorneyHomeScreen from '../screens/Attorneyscreen/AttorneyHomeScreen';
 import AttorneyProfile from '../screens/Attorneyscreen/AttorneyProfile';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useIsFocused } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
-
 function CustomTabBar({state, descriptors, navigation}: any) {
-
   const isFocused = useIsFocused();
 
   const [user, setUser] = React.useState(null);
@@ -31,7 +30,7 @@ function CustomTabBar({state, descriptors, navigation}: any) {
       } catch (error) {
         console.log('Error reading user info:', error);
       }
-    }
+    };
     logdinuser();
   }, [isFocused]);
   return (
@@ -49,7 +48,7 @@ function CustomTabBar({state, descriptors, navigation}: any) {
 
           if (!isFocused && !event.defaultPrevented) {
             // Navigate to the route associated with the tab
-            navigation.navigate(route.name, { id: user?.id});
+            navigation.navigate(route.name, {id: user?.id});
           }
         };
 
@@ -74,7 +73,10 @@ function CustomTabBar({state, descriptors, navigation}: any) {
               isFocused ? 'bg-primary' : 'bg-transparent'
             }`}>
             <SvgXml xml={icon} width={24} height={24} />
-            <Text style={tw`ml-2 font-bold ${isFocused ? 'text-[#FFFFFF]' : 'text-[#929299]'}`}>
+            <Text
+              style={tw`ml-2 font-bold ${
+                isFocused ? 'text-[#FFFFFF]' : 'text-[#929299]'
+              }`}>
               {options.tabBarLabel || route.name}
             </Text>
           </TouchableOpacity>
@@ -90,18 +92,17 @@ const AttorneyBottomRoutes = () => {
       initialRouteName="Home"
       screenOptions={{
         headerShown: false,
-        tabBarShowLabel: true, 
+        tabBarShowLabel: true,
       }}
       tabBar={props => <CustomTabBar {...props} />}>
-      
       <Tab.Screen
         name="Home"
         component={AttorneyHomeScreen}
         options={{
           tabBarLabel: 'Home', // Explicit label
           tabBarLabelStyle: {
-            color: '#000000', 
-            fontSize: 16, 
+            color: '#000000',
+            fontSize: 16,
           },
         }}
       />

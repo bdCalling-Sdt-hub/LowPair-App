@@ -25,8 +25,6 @@ const MainScreenHeader: React.FC = () => {
   const [attorney, setAttorney] = useState<boolean>(false);
   const { user } = useAuthUser();
   const [userinfo, setUserinfo] = useState<string>('');
-
-  console.log('attorney', attorney);
   useEffect(() => {
     const checkLoggedInUser = async () => {
       try {
@@ -50,7 +48,7 @@ const MainScreenHeader: React.FC = () => {
   const handleProfilePress = () => {
     if (!user?.id) return;
 
-    const screenName = attorney === true ? 'atonomyProfile' : 'Profile';
+    const screenName = attorney ? 'atonomyProfile' : 'Profile';
     navigation.navigate(screenName, { id: user.id });
   };
 
@@ -65,7 +63,7 @@ const MainScreenHeader: React.FC = () => {
       {/* Sidebar Toggle Button */}
       <TouchableOpacity
         onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
-        <Text t>
+        <Text style={{ fontSize: 24 }}>
           <SvgXml xml={menuitem} />
         </Text>
       </TouchableOpacity>

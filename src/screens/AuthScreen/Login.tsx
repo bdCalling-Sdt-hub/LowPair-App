@@ -54,39 +54,36 @@ const Login = () => {
     setShowPassword(prev => !prev);
   };
 
+
   useEffect(() => {
-    const checkLoggedInUser = async () => {
+    const initialize = async () => {
       try {
-        const userInfo = await AsyncStorage.getItem('user');
+        const [userInfo, token] = await Promise.all([
+          AsyncStorage.getItem('user'),
+          AsyncStorage.getItem('token'),
+        ]);
+
         const parsedUser = userInfo ? JSON.parse(userInfo) : null;
 
-        console.log('user+++++++++++++++++++', parsedUser);
+        console.log('User info:', parsedUser);
 
         if (parsedUser?.role === 'lawyer') {
           setAttorney(true);
-          navigation.navigate('attorneybottomroutes');
+          if (token) {
+            navigation.navigate('attorneybottomroutes');
+          }
         } else if (parsedUser) {
-          navigation.navigate('bottomroutes');
+          if (token) {
+            navigation.navigate('bottomroutes');
+          }
         }
       } catch (error) {
-        console.log('Warning! reading user info:', error);
+        console.warn('Error checking login info:', error);
       }
     };
 
-    checkLoggedInUser();
-  }, []);
-
-  useEffect(() => {
-    const checktoken = async () => {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        navigation.navigate(attorney ? 'attorneybottomroutes' : 'bottomroutes');
-      }
-    };
-
-    checktoken();
-  });
-
+    initialize();
+  }, [navigation]);
   const onSubmit = async (data: LoginProps) => {
     // If you use JSON instead of FormData for login
     const loginData = {
@@ -96,6 +93,7 @@ const Login = () => {
 
     try {
       const response = await loginUser(loginData).unwrap();
+
       console.log('Login Response:', response);
       if (response.success === true) {
         Alert.alert('Success', 'Login successful!');
@@ -113,7 +111,7 @@ const Login = () => {
         Alert.alert('Warning!', response.message);
       }
     } catch (err) {
-      console.error('Login failed:', err);
+      console.log('Login failed:', err);
       // You can handle the error here and show a message to the user
     }
   };
@@ -137,10 +135,10 @@ const Login = () => {
                 name="email"
                 rules={{
                   required: 'Email is required',
-                  pattern: {
-                    value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                    message: 'Invalid email address',
-                  },
+                  // pattern: {
+                  //   value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                  //   message: 'Invalid email address',
+                  // },
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View style={tw`relative`}>

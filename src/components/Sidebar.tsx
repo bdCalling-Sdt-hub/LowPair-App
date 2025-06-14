@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   Dimensions,
   Image,
   Modal,
+  SafeAreaView,
   Text,
   TextInput,
   TouchableOpacity,
@@ -12,17 +13,16 @@ import {
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { SvgXml } from 'react-native-svg';
 import { LogoutIcon } from '../assets/Icons';
 import logo from '../assets/images/Logo.png';
 import { useAuthUser } from '../lib/AuthProvider';
 import tw from '../lib/tailwind';
-import { setUser } from '../redux/features/users/userslice';
 
 const Sidebar: React.FC = () => {
   const { user } = useAuthUser();
-  const isfocused = useIsFocused();
+  console.log('user', user?.role);
   const navigation = useNavigation<any>();
   const { height } = Dimensions.get('window');
   const adjustedHeight = height - 250;
@@ -30,23 +30,6 @@ const Sidebar: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
   const [password, setPassword] = useState(''); // State for holding password input
 
-  useEffect(() => {
-    // Retrieve user data from AsyncStorage
-    AsyncStorage.getItem('user').then((userData) => {
-      if (userData) {
-        setUser(JSON.parse(userData));
-      }
-    });
-  }, [isfocused]);
-
-
-
-
-
-
-
-
-  console.log('role', user);
   // Function to handle delete profile action
   const handleDeleteProfile = async () => {
     if (password) {
@@ -71,6 +54,7 @@ const Sidebar: React.FC = () => {
     }
   };
 
+
   const handleLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
       {
@@ -82,8 +66,12 @@ const Sidebar: React.FC = () => {
         style: 'destructive',
         onPress: async () => {
           try {
+            // Close the drawer first
+            navigation.dispatch(DrawerActions.closeDrawer());
+
             // Remove both token and user data
             await AsyncStorage.multiRemove(['token', 'user']);
+
             // Reset navigation stack and navigate to LoginScreen
             navigation.reset({
               index: 0,
@@ -91,7 +79,7 @@ const Sidebar: React.FC = () => {
             });
           } catch (error) {
             console.log('Error during logout:', error);
-            Alert.alert('Error', 'Failed to logout. Please try again.');
+            Alert.alert('Warning', 'Failed to logout. Please try again.');
           }
         },
       },
@@ -103,6 +91,7 @@ const Sidebar: React.FC = () => {
     'Legal resources',
     'Disclaimers',
     'Favorite list',
+
   ];
   const LawyerItems = [
     'About us',
@@ -111,80 +100,92 @@ const Sidebar: React.FC = () => {
     'Update personal information',
     'Update password',
   ];
+
   return (
-    <DrawerContentScrollView contentContainerStyle={{ flex: 1, padding: 20 }}>
-      <Image source={logo} style={tw`mt-4 ml-4`} resizeMode="contain" />
+    <SafeAreaView style={tw`flex-1 pb-4`}>
+      <DrawerContentScrollView
+        contentContainerStyle={{ flex: 1, padding: 20, paddingBottom: 100 }}>
+        <View>
+          <Image
+            source={logo}
+            style={tw`mt-4 ml-4 pb-6`}
+            resizeMode="contain"
+          />
+          {/* Navigation Links */}
+          <View style={tw`mt-8 pl-4`}>
 
-      {/* Navigation Links */}
-      <View style={[tw`mt-8 pl-4`, { height: adjustedHeight }]}>
-        {user?.role === 'user'
-          ? userItems
-          : LawyerItems.map((item, index) => (
-            <Text
-              style={tw`text-[#41414D] text-[16px] font-bold  mb-4 rounded-lg`}
-              key={index}
-              onPress={() => {
-                const screenName =
-                  item === 'Update password' ||
-                    item === 'Update personal information'
-                    ? 'editprofile'
-                    : item;
+            {(user?.role === 'user' ? userItems : LawyerItems).map((item, index) => (
+              <Text
+                style={tw`text-[#41414D] text-[16px] font-bold  mb-4 rounded-lg`}
+                key={index}
+                onPress={() => {
+                  const screenName =
+                    item === 'Update password' ||
+                      item === 'Update personal information'
+                      ? 'editprofile'
+                      : item;
 
-                navigation.navigate(screenName, { title: item });
-              }}
-            // Modify to correct screen
-            >
-              {item}
-            </Text>
-          ))}
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Text style={tw`text-red-500 text-[16px] font-bold mb-4 rounded-lg`}>
-            Delete your profile
-          </Text>
-        </TouchableOpacity>
-      </View>
+                  navigation.navigate(screenName, { title: item });
+                }}
+              // Modify to correct screen
+              >
+                {item}
+              </Text>
+            ))}
+            {/* <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <Text style={tw`text-red text-[16px] font-bold mb-4 rounded-lg`}>
+                Delete your profile
+              </Text>
+            </TouchableOpacity> */}
+          </View>
+        </View>
 
+        {/* Modal for Delete Profile */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}>
+          <View
+            style={tw`flex-1 justify-center items-center bg-black bg-opacity-50`}>
+            <View style={tw`bg-white p-6 rounded-lg w-80`}>
+              <Text style={tw`text-xl mb-4`}>Delete Your Profile</Text>
+              <TextInput
+                placeholder="Enter your password"
+                secureTextEntry
+                style={tw`border border-gray-300 p-2 rounded-lg mb-4`}
+                value={password}
+                onChangeText={setPassword}
+              />
+              <View style={tw`flex flex-row justify-between w-full gap-2`}>
+                <TouchableOpacity
+                  onPress={() => setModalVisible(false)}
+                  style={tw`bg-red p-2 rounded-lg h-[44px] w-1/2`}>
+                  <Text style={tw`text-center text-lg text-white`}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleDeleteProfile}
+                  style={tw`bg-primary p-2 rounded-lg h-[44px] w-1/2`}>
+                  <Text style={tw`text-center text-lg text-white`}>Delete</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </DrawerContentScrollView>
       {/* Logout */}
-      <TouchableOpacity onPress={handleLogout} style={{ marginTop: 20 }}>
+      <TouchableOpacity
+        onPress={handleLogout}
+        style={{
+          marginVertical: 20,
+          paddingHorizontal: 20,
+        }}>
         <View style={tw`flex flex-row items-center`}>
           <SvgXml xml={LogoutIcon} style={tw`mr-1`} />
           <Text style={tw`text-red text-[16px] font-normal`}>Log out</Text>
         </View>
       </TouchableOpacity>
-
-      {/* Modal for Delete Profile */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}>
-        <View
-          style={tw`flex-1 justify-center items-center bg-black bg-opacity-50`}>
-          <View style={tw`bg-white p-6 rounded-lg w-80`}>
-            <Text style={tw`text-xl mb-4`}>Delete Your Profile</Text>
-            <TextInput
-              placeholder="Enter your password"
-              secureTextEntry
-              style={tw`border border-gray-300 p-2 rounded-lg mb-4`}
-              value={password}
-              onChangeText={setPassword}
-            />
-            <View style={tw`flex flex-row justify-between w-full gap-2`}>
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                style={tw`bg-red p-2 rounded-lg h-[44px] w-1/2`}>
-                <Text style={tw`text-center text-lg text-white`}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleDeleteProfile}
-                style={tw`bg-primary p-2 rounded-lg h-[44px] w-1/2`}>
-                <Text style={tw`text-center text-lg text-white`}>Delete</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-    </DrawerContentScrollView>
+    </SafeAreaView>
   );
 };
 

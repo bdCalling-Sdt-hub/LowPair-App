@@ -52,6 +52,7 @@ const OtpVerifyAfterRegister: React.FC = ({ route }: any) => {
 
   const handleVerify = async () => {
     const otpCode = code?.join('') || '';
+
     console.log('Entered OTP Code:', otpCode);
 
     if (otpCode.length !== 6) {
@@ -63,22 +64,22 @@ const OtpVerifyAfterRegister: React.FC = ({ route }: any) => {
 
     try {
       const resp = await verifyOtp(data).unwrap();
-
+      console.log('response otp-verify', resp);
       if (resp?.success) {
         Alert.alert('Success', resp?.message);
-        // await AsyncStorage.setItem('token', resp?.access_token);
+        await AsyncStorage.setItem('token', resp?.access_token);
         navigation.navigate('LoginScreen');
       } else {
-        Alert.alert('Error', resp?.message || 'OTP verification failed');
+        Alert.alert('Warning', resp?.message || 'OTP verification failed');
       }
     } catch (error) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
+      Alert.alert('Warning', 'Something went wrong. Please try again.');
     }
   };
 
   const handleresendOtp = async () => {
     if (!email) {
-      Alert.alert('Error', 'Email is required');
+      Alert.alert('Warning', 'Email is required');
       return;
     }
 

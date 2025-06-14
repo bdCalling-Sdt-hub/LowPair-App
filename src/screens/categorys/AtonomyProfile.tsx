@@ -13,7 +13,6 @@ import {
   phoneicon,
 } from '../../assets/Icons';
 import { useGetLawyerByIdQuery } from '../../redux/features/Categorys/CategoryApi';
-import { ScrollView } from 'react-native-gesture-handler';
 type DayButton = {
     id: number;
     day: string;
@@ -51,7 +50,7 @@ const availavility = attorneyDetails?.schedule;
       )
     }
   return (
-    <ScrollView style={tw`bg-[#F5F5F7] h-full mb-4`}>
+    <View style={tw`bg-[#F5F5F7] h-full`}>
       <FiltaredHeader title={'Attorney profile'} />
 
       <View style={tw`px-6`}>
@@ -157,7 +156,7 @@ const availavility = attorneyDetails?.schedule;
             Time: 
             <Text style={tw`text-[#41414D] ml-1`}>
               {
-                availavility?.find(item => item.day === selectedDay)?.time || ' Not Available'
+                availavility.find(item => item.day === selectedDay)?.time || ' Not Available'
               }
             </Text>
           </Text>
@@ -169,7 +168,7 @@ const availavility = attorneyDetails?.schedule;
 
 
       </View>
-    </ScrollView>
+    </View>
   );
 };
 

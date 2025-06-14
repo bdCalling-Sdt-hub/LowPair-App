@@ -8,6 +8,8 @@ import { cameraicon } from "../../assets/Icons";
 import { useUpdatePersonalInformationMutation, useUpdateProfilePasswodMutation } from "../../redux/features/users/UserApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { backIcon } from "../../assets/Icons";
+
 
 const Profile: React.FC = () => {
   const [updatePersonalInformation] = useUpdatePersonalInformationMutation();
@@ -28,9 +30,9 @@ const Profile: React.FC = () => {
   const [currentPassword, setCurrentPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
-const isFocused = useIsFocused();
+  const isFocused = useIsFocused();
   // Initialize form with user data
- const navigation = useNavigation();
+  const navigation = useNavigation();
 
   // Handle profile image upload
   const handleImageUpload = () => {
@@ -60,16 +62,16 @@ const isFocused = useIsFocused();
   // Save profile changes
   const handleSaveProfile = async () => {
 
-    if(!firstname || !lastname || !contactNumber || !location){
+    if (!firstname || !lastname || !contactNumber || !location) {
       Alert.alert("Error", "All fields are required");
       return;
     }
     const formData = new FormData();
-    formData.append("first_name", firstname); 
+    formData.append("first_name", firstname);
     formData.append("last_name", lastname);
     formData.append("phone", contactNumber);
     formData.append("address", location);
-  
+
     if (profileImage) {
       formData.append("avatar", {
         uri: profileImage,
@@ -77,19 +79,19 @@ const isFocused = useIsFocused();
         type: "image/jpeg",
       });
     }
-  
+
     try {
       const response = await updatePersonalInformation(formData).unwrap();
       AsyncStorage.setItem('user', JSON.stringify(response?.user));
       console.log("Profile update response:", response);
-      if(response.success){
+      if (response.success) {
         triggerUserRefetch();
         Alert.alert("Success", response.message);
         navigation.navigate(`${user?.role === "user" ? "Profile" : "attornyProfile"}`, { id: user?.id });
       }
 
     } catch (error) {
-      Alert.alert("Error",error?.data?.message);
+      Alert.alert("Error", error?.data?.message);
     }
   };
 
@@ -116,14 +118,14 @@ const isFocused = useIsFocused();
         password: newPassword,
         password_confirmation: confirmPassword
       }).unwrap();
-      
+
       Alert.alert("Success", response.message);
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
       console.log("Password update response:", response);
     } catch (error) {
-      Alert.alert("Error",error?.data?.message);
+      Alert.alert("Error", error?.data?.message);
       console.error("Password update error:", error);
     } finally {
       setIsLoading(false);
@@ -132,6 +134,13 @@ const isFocused = useIsFocused();
 
   return (
     <View style={tw`flex-1 p-4 bg-white`}>
+      <View>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <SvgXml xml={backIcon} />
+
+
+        </TouchableOpacity>
+      </View>
       {/* Profile Image */}
       <View style={tw`items-center mt-4`}>
         <View style={tw`relative`}>

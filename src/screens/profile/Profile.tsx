@@ -1,15 +1,16 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, Image, TouchableOpacity, Alert} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, TouchableOpacity, Alert } from 'react-native';
 import tw from '../../lib/tailwind';
-import {ScrollView} from 'react-native-gesture-handler';
-import MainScreenHeader from '../../components/MainScreenHeader';
-import {SvgXml} from 'react-native-svg';
-import {editicon, emailIcon, locationicon, phoneicon} from '../../assets/Icons';
-import {launchImageLibrary} from 'react-native-image-picker';
+import { ScrollView } from 'react-native-gesture-handler';
+
+import { SvgXml } from 'react-native-svg';
+import { editicon, emailIcon, locationicon, phoneicon } from '../../assets/Icons';
+import { launchImageLibrary } from 'react-native-image-picker';
 import { useAuthUser } from '../../lib/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MainScreenHeader from '../../components/MainScreenHeader';
 
-const Profile = ({navigation}: any) => {
+const Profile = ({ navigation }: any) => {
   const { user } = useAuthUser();
   const [userinfo, setUserinfo] = useState<string>('');
   useEffect(() => {
@@ -20,7 +21,7 @@ const Profile = ({navigation}: any) => {
 
         console.log('user+++++++++++++++++++', parsedUser);
         setUserinfo(parsedUser);
-       
+
 
       } catch (error) {
         console.log("Error reading user info:", error);
@@ -32,7 +33,7 @@ const Profile = ({navigation}: any) => {
   const [profileImage, setProfileImage] = useState<string | null>(user?.avatar);
 
   const handleImageUpload = () => {
-    launchImageLibrary({mediaType: 'photo', quality: 1}, (response) => {
+    launchImageLibrary({ mediaType: 'photo', quality: 1 }, (response) => {
       if (response.didCancel) {
         Alert.alert('Image upload cancelled');
       } else if (response.errorCode) {
@@ -45,14 +46,14 @@ const Profile = ({navigation}: any) => {
 
   return (
     <ScrollView style={tw`bg-white h-full`}>
-      <MainScreenHeader  />
+      <MainScreenHeader />
       <View style={tw`p-4`}>
         <View style={tw`flex items-center justify-center`}>
           <TouchableOpacity >
             <Image
               source={
-               userinfo?.avatar
-                  ? {uri:userinfo?.avatar}
+                userinfo?.avatar
+                  ? { uri: userinfo?.avatar }
                   : require('../../assets/images/avater.png')
               }
               style={tw`w-24 h-24 rounded-full`}
@@ -62,7 +63,7 @@ const Profile = ({navigation}: any) => {
             {userinfo?.first_name} {userinfo?.last_name}
           </Text>
 
-         
+
         </View>
 
         <View style={tw`mt-8`}>

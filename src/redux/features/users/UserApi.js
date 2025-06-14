@@ -1,24 +1,33 @@
-import { api } from "../../baseApi"; 
+import {api} from '../../baseApi';
 
 const userApi = api.injectEndpoints({
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     registerUser: builder.mutation({
-      query: (body) => ({
-        url: "/register",
-        method: "POST",
-        body
+      query: body => ({
+        url: '/register',
+        method: 'POST',
+        body,
       }),
-     
+      // Optional: handle unexpected (non-JSON) response gracefully
+      transformResponse: async (response, meta) => {
+        try {
+          // If response is already JSON, just return it
+          return response;
+        } catch (error) {
+          const text = await meta.response.text();
+          throw new Error(`Unexpected response: ${text}`);
+        }
+      },
     }),
 
     loginUser: builder.mutation({
-      query: (body) => ({
+      query: body => ({
         url: `/login`,
-        method: "POST",
+        method: 'POST',
         body,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
       }),
-      transformResponse: (response) => {
+      transformResponse: response => {
         try {
           return typeof response === 'string' ? JSON.parse(response) : response;
         } catch (err) {
@@ -27,98 +36,97 @@ const userApi = api.injectEndpoints({
         }
       },
     }),
-    
 
-
-
-      // IT WILL TAKE EMAIL TO VERIFY EMAIL-------------------------------
-      verifyEmail: builder.mutation({
-        query: (body) => ({
-          url: `/resent-otp`, 
-          method: "POST",
-          body,
-        }),
-        
+    // IT WILL TAKE EMAIL TO VERIFY EMAIL-------------------------------
+    verifyEmail: builder.mutation({
+      query: body => ({
+        url: `/resent-otp`,
+        method: 'POST',
+        body,
       }),
+    }),
 
-
-      // IT WILL TAKE OTP TO VERIFY-------------------------------
-      verifyOtp: builder.mutation({
-        query: (body) => ({
-          url: `/verify-email`, 
-          method: "POST",
-          body,
-        }),
-        
+    // IT WILL TAKE OTP TO VERIFY-------------------------------
+    verifyOtp: builder.mutation({
+      query: body => ({
+        url: `/verify-email`,
+        method: 'POST',
+        body,
       }),
+    }),
 
-
-
-      //IT WILL TAKE OLD PAS NEW PASS CONFIRM PASS TO UPDATE PASSWORD
-      resetPassword: builder.mutation({
-        query: (body) => ({
-          url: `/update-password`, 
-          method: "POST",
-          body,
-        }),
-        
+    //IT WILL TAKE OLD PAS NEW PASS CONFIRM PASS TO UPDATE PASSWORD
+    resetPassword: builder.mutation({
+      query: body => ({
+        url: `/update-password`,
+        method: 'POST',
+        body,
       }),
+    }),
 
-      Logout: builder.mutation({
-        query: (body) => ({
-          url: `/logout`, 
-          method: "POST",
-          body,
-        }),
-        
+    Logout: builder.mutation({
+      query: body => ({
+        url: `/logout`,
+        method: 'POST',
+        body,
       }),
+    }),
 
-      GetMyprofile: builder.query({
-        query: () => ({
-          url: `/user/profile`, 
-        }),
-        
+    GetMyprofile: builder.query({
+      query: () => ({
+        url: `/user/profile`,
       }),
+    }),
 
-      // USR PROFILE INFORMATION HERE -------------------------------
+    // USR PROFILE INFORMATION HERE -------------------------------
 
-      updatePersonalInformation : builder.mutation({
-        query: (body) => ({
-          url: `/update-profile`, 
-          method: "POST",
-          body,
-        }),
-        providesTags: ['User'],
-        
+    updatePersonalInformation: builder.mutation({
+      query: body => ({
+        url: `/update-profile`,
+        method: 'POST',
+        body,
       }),
+      providesTags: ['User'],
+    }),
 
-      updateProfilePasswod : builder.mutation({
-        query: (body) => ({
-          url: `/update-password`, 
-          method: "POST",
-          body,
-        }),
-        providesTags: ['User'],
-        
+    updateProfilePasswod: builder.mutation({
+      query: body => ({
+        url: `/update-password`,
+        method: 'POST',
+        body,
       }),
+      providesTags: ['User'],
+    }),
 
-      getLawyers: builder.query({
-        query: ({ per_page, page }) => ({
-          url: `/lawyer/all-lawyers?per_page=${per_page}&page=${page}`,
-          method: 'GET',
-        }),
-        invalidatesTags: ['Lawyer'],
+    getLawyers: builder.query({
+      query: ({per_page, page}) => ({
+        url: `/lawyer/all-lawyers?per_page=${per_page}&page=${page}`,
+        method: 'GET',
       }),
+      invalidatesTags: ['Lawyer'],
+    }),
 
-      getuserinfoById: builder.query({
-        query: (id) => ({
-          url: `/user/${id}`,
-          method: 'GET',
-        }),
-        invalidatesTags: ['User'],
+    getuserinfoById: builder.query({
+      query: id => ({
+        url: `/user/${id}`,
+        method: 'GET',
       }),
-  }), 
+      invalidatesTags: ['User'],
+    }),
+  }),
 });
 
-export const { useRegisterUserMutation, useLoginUserMutation, useVerifyEmailMutation, useVerifyOtpMutation, useResetPasswordMutation, useLogoutMutation, useUpdatePersonalInformationMutation, useUpdateProfilePasswodMutation, useGetLawyersQuery, useGetMyprofileQuery, useGetuserinfoByIdQuery} = userApi;
-export default userApi; 
+export const {
+  useRegisterUserMutation,
+  useLoginUserMutation,
+  useVerifyEmailMutation,
+  useVerifyOtpMutation,
+  useResetPasswordMutation,
+  useLogoutMutation,
+  useUpdatePersonalInformationMutation,
+  useUpdateProfilePasswodMutation,
+  useGetLawyersQuery,
+  useGetMyprofileQuery,
+  useGetuserinfoByIdQuery,
+} = userApi;
+export default userApi;

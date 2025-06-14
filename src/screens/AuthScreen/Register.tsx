@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Controller, useForm} from 'react-hook-form';
+import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import {
   Alert,
   ScrollView,
@@ -8,13 +8,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {EyeIcon, EyeOffIcon} from '../../assets/Icons';
+import { EyeIcon, EyeOffIcon } from '../../assets/Icons';
 
-import {useNavigation} from '@react-navigation/native';
-import {SvgXml} from 'react-native-svg';
+import { useNavigation } from '@react-navigation/native';
+import { SvgXml } from 'react-native-svg';
 import Header from '../../components/Header';
 import tw from '../../lib/tailwind';
-import {useRegisterUserMutation} from '../../redux/features/users/UserApi';
+import { useRegisterUserMutation } from '../../redux/features/users/UserApi';
 
 // Define types for user role
 type UserType = 'user' | 'lawyer';
@@ -39,14 +39,14 @@ const Register: React.FC = () => {
     control,
     handleSubmit,
     watch,
-    formState: {errors},
+    formState: { errors },
   } = useForm<FormData>();
 
   // Get password value for validation
   const password = watch('password');
 
   // Use mutation hook for registration
-  const [registerUser, {isLoading, error}] = useRegisterUserMutation();
+  const [registerUser, { isLoading, error }] = useRegisterUserMutation();
 
   const navigation = useNavigation();
 
@@ -61,16 +61,23 @@ const Register: React.FC = () => {
       role: userType,
     };
 
-    const response = await registerUser(formData).unwrap();
-    console.log('Registration successful', response);
-    if (response.success) {
-      navigation.navigate('OtpVerifyAfterRegister', {email: formData.email});
-      Alert.alert('Registration successful!', response.message);
+    try {
+
+      const response = await registerUser(formData).unwrap();
+      console.log('Registration successful', response);
+      if (response.success) {
+        navigation.navigate('OtpVerifyAfterRegister', { email: formData.email });
+        Alert.alert('Registration successful!', response.message);
+      }
+
+      if (response.success === false) {
+        Alert.alert(response.message);
+      }
+
+    } catch (error) {
+      Alert.alert('Warning', 'Something went wrong. Please try again.');
     }
 
-    if (response.success === false) {
-      Alert.alert(response.message);
-    }
 
     // navigation.navigate('otpverify', { email: response?.data.email });
   };
@@ -89,30 +96,26 @@ const Register: React.FC = () => {
           <View
             style={tw`flex-row justify-between border-b-2 border-gray-300 mb-5`}>
             <TouchableOpacity
-              style={tw`flex-1 items-center py-3 ${
-                userType === 'user' ? 'border-b-4 border-blue-500' : ''
-              }`}
+              style={tw`flex-1 items-center py-3 ${userType === 'user' ? 'border-b-4 border-blue-500' : ''
+                }`}
               onPress={() => setUserType('user')}>
               <Text
-                style={tw`text-lg ${
-                  userType === 'user'
-                    ? 'text-blue-500 font-bold'
-                    : 'text-gray-500'
-                }`}>
+                style={tw`text-lg ${userType === 'user'
+                  ? 'text-blue-500 font-bold'
+                  : 'text-gray-500'
+                  }`}>
                 I'm a user
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={tw`flex-1 items-center py-3 ${
-                userType === 'lawyer' ? 'border-b-4 border-blue-500' : ''
-              }`}
+              style={tw`flex-1 items-center py-3 ${userType === 'lawyer' ? 'border-b-4 border-blue-500' : ''
+                }`}
               onPress={() => setUserType('lawyer')}>
               <Text
-                style={tw`text-lg ${
-                  userType === 'lawyer'
-                    ? 'text-blue-500 font-bold'
-                    : 'text-gray-500'
-                }`}>
+                style={tw`text-lg ${userType === 'lawyer'
+                  ? 'text-blue-500 font-bold'
+                  : 'text-gray-500'
+                  }`}>
                 I'm an attorney
               </Text>
             </TouchableOpacity>
@@ -122,8 +125,8 @@ const Register: React.FC = () => {
           <Controller
             control={control}
             name="firstName"
-            rules={{required: 'First name is required'}}
-            render={({field: {onChange, value}}) => (
+            rules={{ required: 'First name is required' }}
+            render={({ field: { onChange, value } }) => (
               <>
                 <TextInput
                   style={tw`h-12 border border-gray-300 rounded px-4 bg-gray-100 mb-2`}
@@ -132,9 +135,7 @@ const Register: React.FC = () => {
                   onChangeText={onChange}
                 />
                 {errors.firstName && (
-                  <Text style={tw`text-red-500`}>
-                    {errors.firstName.message}
-                  </Text>
+                  <Text style={tw`text-red`}>{errors.firstName.message}</Text>
                 )}
               </>
             )}
@@ -143,8 +144,8 @@ const Register: React.FC = () => {
           <Controller
             control={control}
             name="lastName"
-            rules={{required: 'Last name is required'}}
-            render={({field: {onChange, value}}) => (
+            rules={{ required: 'Last name is required' }}
+            render={({ field: { onChange, value } }) => (
               <>
                 <TextInput
                   style={tw`h-12 border border-gray-300 rounded px-4 bg-gray-100 mb-2`}
@@ -153,9 +154,7 @@ const Register: React.FC = () => {
                   onChangeText={onChange}
                 />
                 {errors.lastName && (
-                  <Text style={tw`text-red-500`}>
-                    {errors.lastName.message}
-                  </Text>
+                  <Text style={tw`text-red`}>{errors.lastName.message}</Text>
                 )}
               </>
             )}
@@ -171,7 +170,7 @@ const Register: React.FC = () => {
                 message: 'Enter a valid email address',
               },
             }}
-            render={({field: {onChange, value}}) => (
+            render={({ field: { onChange, value } }) => (
               <>
                 <TextInput
                   style={tw`h-12 border border-gray-300 rounded px-4 bg-gray-100 mb-2`}
@@ -181,7 +180,7 @@ const Register: React.FC = () => {
                   onChangeText={onChange}
                 />
                 {errors.email && (
-                  <Text style={tw`text-red-500`}>{errors.email.message}</Text>
+                  <Text style={tw`text-red`}>{errors.email.message}</Text>
                 )}
               </>
             )}
@@ -198,7 +197,7 @@ const Register: React.FC = () => {
                 message: 'Password must be at least 6 characters',
               },
             }}
-            render={({field: {onChange, value}}) => (
+            render={({ field: { onChange, value } }) => (
               <>
                 <View style={tw`relative`}>
                   <TextInput
@@ -219,9 +218,7 @@ const Register: React.FC = () => {
                   </TouchableOpacity>
                 </View>
                 {errors.password && (
-                  <Text style={tw`text-red-500`}>
-                    {errors.password.message}
-                  </Text>
+                  <Text style={tw`text-red`}>{errors.password.message}</Text>
                 )}
               </>
             )}
@@ -235,7 +232,7 @@ const Register: React.FC = () => {
               required: 'Confirm password is required',
               validate: value => value === password || 'Passwords do not match',
             }}
-            render={({field: {onChange, value}}) => (
+            render={({ field: { onChange, value } }) => (
               <>
                 <View style={tw`relative`}>
                   <TextInput
@@ -258,7 +255,7 @@ const Register: React.FC = () => {
                   </TouchableOpacity>
                 </View>
                 {errors.confirmPassword && (
-                  <Text style={tw`text-red-500`}>
+                  <Text style={tw`text-red`}>
                     {errors.confirmPassword.message}
                   </Text>
                 )}
