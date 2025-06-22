@@ -1,16 +1,16 @@
-import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import React, { useState, useCallback, useEffect } from 'react';
 import tw from '../../lib/tailwind';
 import FevoriteListCard from '../../components/FevoriteListCard';
-import { useGetFevoriteListQuery } from '../../redux/features/Categorys/CategoryApi';
+import { useGetFevoriteListQuery, useMarkasUnfevoriteMutation } from '../../redux/features/Categorys/CategoryApi';
 import MainScreenHeader from '../../components/MainScreenHeader';
 
 const FevoriteList = () => {
   const [page, setPage] = useState(1);
   const [perPage] = useState(20); // Made constant if not changing
   const [combinedData, setCombinedData] = useState([]); // Stores all loaded data
-
-  const { data, isLoading, isFetching, error } = useGetFevoriteListQuery(
+  const [markasUnfevorite, { isLoading: isUnfevoriteLoading }] = useMarkasUnfevoriteMutation();
+  const { data, isLoading, isFetching, error, refetch } = useGetFevoriteListQuery(
     { page, per_page: perPage },
     { refetchOnMountOrArgChange: true }
   );
@@ -24,10 +24,29 @@ const FevoriteList = () => {
         return [...prev, ...data.favoriteList.data];
       });
     }
+
   }, [data, page]);
 
+
+
+  const handleunfevorite = async (id: any) => {
+    const response = await markasUnfevorite(id);
+    console.log('response--------------', response);
+    if (response?.data?.success) {
+      Alert.alert('Success', response?.data?.message);
+      refetch();
+    }
+    console.log('id', id)
+  }
+
+
+
+
+
+
+
   const renderItem = useCallback(({ item }) => (
-    <FevoriteListCard item={item} />
+    <FevoriteListCard onPress={() => handleunfevorite(item.id)} item={item} />
   ), []);
 
   const keyExtractor = useCallback((item) => item.id.toString(), []);
@@ -62,7 +81,7 @@ const FevoriteList = () => {
 
   return (
     <View style={tw`flex-1 bg-[#F5F5F7]`}>
-      <MainScreenHeader/>
+      <MainScreenHeader ofuser={true} />
       <FlatList
         data={combinedData}
         renderItem={renderItem}
@@ -81,11 +100,11 @@ const FevoriteList = () => {
           >
             <Text style={tw`${(page === 1 || isFetching) ? 'text-gray-500' : 'text-white'}`}>Previous</Text>
           </TouchableOpacity>
-          
+
           <Text style={tw`self-center`}>
             Page {page}
           </Text>
-          
+
           <TouchableOpacity
             onPress={handleNextPage}
             disabled={isFetching}

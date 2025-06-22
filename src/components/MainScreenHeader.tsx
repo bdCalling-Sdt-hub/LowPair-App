@@ -7,6 +7,9 @@ import tw from '../lib/tailwind';
 import { useAuthUser } from '../lib/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+interface MainScreenHeaderProps {
+  ofuser?: boolean
+}
 // Define types for your navigation parameters
 type RootStackParamList = {
   attornyProfile: { id: string };
@@ -20,7 +23,7 @@ type NavigationProps = {
   dispatch: (action: any) => void;
 };
 
-const MainScreenHeader: React.FC = () => {
+const MainScreenHeader: React.FC = ({ ofuser }: MainScreenHeaderProps) => {
   const navigation = useNavigation<NavigationProps>();
   const [attorney, setAttorney] = useState<boolean>(false);
   const { user } = useAuthUser();
@@ -31,7 +34,7 @@ const MainScreenHeader: React.FC = () => {
         const userInfo = await AsyncStorage.getItem('user');
         const parsedUser = userInfo ? JSON.parse(userInfo) : null;
 
-        console.log('user+++++++++++++++++++', parsedUser);
+
         setUserinfo(parsedUser);
         if (parsedUser?.role === 'lawyer') {
           setAttorney(true);
@@ -49,7 +52,7 @@ const MainScreenHeader: React.FC = () => {
     if (!user?.id) return;
 
     const screenName = attorney ? 'atonomyProfile' : 'Profile';
-    navigation.navigate(screenName, { id: user.id });
+    navigation?.navigate(screenName, { id: user.id });
   };
 
   return (
@@ -85,18 +88,24 @@ const MainScreenHeader: React.FC = () => {
       </View>
 
       {/* User Info */}
-      <TouchableOpacity
-        onPress={handleProfilePress}
-        style={{
-          marginLeft: 'auto',
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}>
-        <Image
-          source={{ uri: userinfo?.avatar }}
-          style={{ width: 40, height: 40, borderRadius: 100 }}
-        />
-      </TouchableOpacity>
+
+      {
+        !ofuser && (
+          <TouchableOpacity
+            onPress={handleProfilePress}
+            style={{
+              marginLeft: 'auto',
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <Image
+              source={{ uri: userinfo?.avatar }}
+              style={{ width: 40, height: 40, borderRadius: 100 }}
+            />
+          </TouchableOpacity>
+        )
+      }
+
     </View>
   );
 };

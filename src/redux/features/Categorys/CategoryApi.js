@@ -1,21 +1,21 @@
-import { api } from '../../baseApi';
+import {api} from '../../baseApi';
 
 const CategoryApi = api.injectEndpoints({
   endpoints: builder => ({
     getAllCategories: builder.query({
-      query: ({ page = 1, per_page = 10 }) =>
+      query: ({page = 1, per_page = 10}) =>
         `/admin/categories?page=${page}&per_page=${per_page}`,
       providesTags: ['Category'],
     }),
 
     getAllLeagalresources: builder.query({
-      query: ({ page = 1, per_page = 10 }) =>
+      query: ({page = 1, per_page = 10}) =>
         `/admin/legal-resources/?page=${page}&per_page=${per_page}`,
       providesTags: ['Resources'],
     }),
 
     findLawyer: builder.query({
-      query: ({ service_ids, state, language }) => ({
+      query: ({service_ids, state, language}) => ({
         url: `/find-lawyers`,
         method: 'GET',
         params: {
@@ -24,49 +24,54 @@ const CategoryApi = api.injectEndpoints({
           language,
         },
       }),
-      providesTags: ['Lawyer'],
+      providesTags: ['Lawyer', 'Fevorite'],
     }),
 
-    MarkAsFevorite : builder.mutation({
-      query: (id) => ({
+    MarkAsFevorite: builder.mutation({
+      query: id => ({
         url: `/user/mark-as-favorite`,
         method: 'POST',
-        body: { lawyer_id: id },
+        body: {lawyer_id: id},
       }),
-      providesTags: ['Fevorite'],
+      invalidatesTags: ['Fevorite'],
     }),
 
-    GetLawyerById : builder.query({
-      query: (id) => ({
+    markasUnfevorite: builder.mutation({
+      query: id => ({
+        url: `/user/unmark-as-favorite/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Fevorite'],
+    }),
+
+    GetLawyerById: builder.query({
+      query: id => ({
         url: `/lawyer/${id}`,
         method: 'GET',
       }),
     }),
 
-
-    GetFevoriteList : builder.query({
-      query: ({ page = 1, per_page = 10 }) => ({
+    GetFevoriteList: builder.query({
+      query: ({page = 1, per_page = 10}) => ({
         url: `/user/favorite-list?per_page=${per_page}&page=${page}`,
         method: 'GET',
       }),
     }),
 
-    GetAllCategory : builder.query({
+    GetAllCategory: builder.query({
       query: () => ({
         url: `/admin/categories?per_page=9999999`,
         method: 'GET',
       }),
     }),
 
-
-    createYourOwnProfile : builder.mutation({
-      query: (data) => ({
+    createYourOwnProfile: builder.mutation({
+      query: data => ({
         url: `/lawyer/update-profile`,
         method: 'POST',
         body: data,
       }),
     }),
-
   }),
 });
 
@@ -78,7 +83,8 @@ export const {
   useGetLawyerByIdQuery,
   useGetFevoriteListQuery,
   useGetAllCategoryQuery,
-  useCreateYourOwnProfileMutation
+  useCreateYourOwnProfileMutation,
+  useMarkasUnfevoriteMutation,
 } = CategoryApi;
 
 export default CategoryApi;

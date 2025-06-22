@@ -15,9 +15,26 @@ interface Lawyer {
 
 const SuggestedAttorneys: React.FC = () => {
   const route = useRoute();
-  const lawyers: Lawyer[] = route.params?.lawyers || [];
+
+  const [lawyers, setLawyers] = useState<Lawyer[]>(route.params?.lawyers || []);
+
 
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
+
+
+
+
+
+  const toggleFavorite = (id: number) => {
+    setLawyers((prevLawyers) =>
+      prevLawyers.map((lawyer) =>
+        lawyer.id === id
+          ? { ...lawyer, is_favorite: !lawyer.is_favorite }
+          : lawyer
+      )
+    );
+  };
 
   const handleSelect = (id: number) => {
     console.log('Toggling favorite for lawyer ID:', id);
@@ -41,8 +58,9 @@ const SuggestedAttorneys: React.FC = () => {
             description={`${item.experience} experience in ${item.categories.join(', ')}`}
             image={item.avatar}
             selected={selectedIds.includes(item.id)}
-            onSelect={handleSelect} 
+            onSelect={handleSelect}
             attorneyDetails={item}
+            onToggleFavorite={toggleFavorite}
           />
         )}
         contentContainerStyle={tw`p-4`}

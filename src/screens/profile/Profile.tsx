@@ -46,7 +46,7 @@ const Profile = ({ navigation }: any) => {
 
   return (
     <ScrollView style={tw`bg-white h-full`}>
-      <MainScreenHeader />
+      <MainScreenHeader ofuser={true} />
       <View style={tw`p-4`}>
         <View style={tw`flex items-center justify-center`}>
           <TouchableOpacity >

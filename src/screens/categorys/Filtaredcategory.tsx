@@ -12,14 +12,14 @@ const Filtaredcategory = () => {
   const route = useRoute();
   const { id } = route.params; // Extract id from params
   const Navigation = useNavigation();
-  
+
   const { control, handleSubmit } = useForm({
     defaultValues: {
       location: 'New Jersey', // Set default value for location
       language: 'English'    // Set default value for language
     }
   });
-  
+
   const [openLocation, setOpenLocation] = useState(false);
   const [openLanguage, setOpenLanguage] = useState(false);
 
@@ -33,13 +33,13 @@ const Filtaredcategory = () => {
     state,
     language,
   });
-  
+
 
   // Fetch data only when queryParams is set
 
-  console.log('shobkisu',service_ids, state, language);
+  console.log('shobkisu', service_ids, state, language);
 
-  
+
 
   // Dropdown items
   const LocatedItems = [
@@ -57,18 +57,18 @@ const Filtaredcategory = () => {
   ];
 
   // Handle form submission
- const onSubmit = (formData) => {
-  setServiceIds(Array.isArray(formData.service_ids) ? formData.service_ids : []);
-  setState(formData.location);
-  setLanguage(formData.language);
+  const onSubmit = (formData) => {
+    setServiceIds(Array.isArray(formData.service_ids) ? formData.service_ids : []);
+    setState(formData.location);
+    setLanguage(formData.language);
 
-  if(data?.lawyers?.data){
-    Navigation.navigate('suggestedatoreny', { lawyers: data?.lawyers?.data });
-  }
-  if(!data?.lawyers?.data){
-    Alert.alert('No lawyers found');
-  }
-};
+    if (data?.lawyers?.data) {
+      Navigation.navigate('suggestedatoreny', { lawyers: data?.lawyers?.data });
+    }
+    if (!data?.lawyers?.data) {
+      Alert.alert('No lawyers found');
+    }
+  };
 
   useEffect(() => {
     if (data) {
@@ -76,14 +76,14 @@ const Filtaredcategory = () => {
       // You can navigate to results screen here if needed
       // Navigation.navigate('ResultsScreen', { lawyers: data });
     }
-  //  if(data?.lawyers?.data){
-  //    Navigation.navigate('suggestedatoreny', { lawyers: data?.lawyers?.data });
-  //  }
+    //  if(data?.lawyers?.data){
+    //    Navigation.navigate('suggestedatoreny', { lawyers: data?.lawyers?.data });
+    //  }
 
 
 
-   
-    
+
+
   }, [data, error]);
 
   if (isLoading) {

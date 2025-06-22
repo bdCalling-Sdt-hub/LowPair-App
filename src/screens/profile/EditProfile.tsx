@@ -18,7 +18,7 @@ import * as ImagePicker from "react-native-image-picker";
 import tw from "../../lib/tailwind";
 import { useAuthUser } from "../../lib/AuthProvider";
 import { SvgXml } from "react-native-svg";
-import { cameraicon } from "../../assets/Icons";
+import { backIcon2, cameraicon } from "../../assets/Icons";
 import { useUpdatePersonalInformationMutation, useUpdateProfilePasswodMutation } from "../../redux/features/users/UserApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -164,7 +164,7 @@ const Profile: React.FC = () => {
           <ScrollView contentContainerStyle={tw`p-4`} keyboardShouldPersistTaps="handled">
             {/* Back Button */}
             <TouchableOpacity onPress={() => navigation.goBack()} style={tw`mb-4`}>
-              <SvgXml xml={backIcon} />
+              <SvgXml xml={backIcon2} />
             </TouchableOpacity>
 
             {/* Profile Image */}

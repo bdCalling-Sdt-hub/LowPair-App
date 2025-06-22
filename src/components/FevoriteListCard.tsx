@@ -10,14 +10,14 @@ interface AttorneyCardProps {
     id: string;
     name: string;
     description: string;
-    image: any; // যদি এটা uri হয় তাহলে image={{ uri: item.image }} দিতে হবে
+    image: any;
   };
   onPress: () => void;
 }
 
 const FevoriteListCard: React.FC<AttorneyCardProps> = ({ item, onPress }) => {
   const navigation = useNavigation<any>();
-console.log('itemfromfebcard', item);
+  console.log('itemfromfebcard', item);
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate('atonomyProfile', { id: item.id })}

@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import React, { useEffect } from 'react';
 import { SvgXml } from 'react-native-svg';
 import { chekcircle, correctchekcircle } from '../assets/Icons';
@@ -22,16 +22,18 @@ interface AttorneyCardProps {
   selected: boolean;
   onSelect: (id: number) => void;
   attorneyDetails: any;
+  onToggleFavorite: (id: number) => void;
 }
 
-const AttorneyCard: React.FC<AttorneyCardProps> = ({ 
-  name, 
-  description, 
-  image, 
-  selected, 
+const AttorneyCard: React.FC<AttorneyCardProps> = ({
+  name,
+  description,
+  image,
+  selected,
   id,
   onSelect,
   attorneyDetails,
+  onToggleFavorite
 
 }) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -39,8 +41,8 @@ const AttorneyCard: React.FC<AttorneyCardProps> = ({
   const [markAsFavorite, { isLoading }] = useMarkAsFevoriteMutation();
 
 
-console.log('attorneyDetails', attorneyDetails?.is_favorite);
-  
+  console.log('attorneyDetails', attorneyDetails?.is_favorite);
+
   useEffect(() => {
     const getToken = async () => {
       try {
@@ -61,10 +63,16 @@ console.log('attorneyDetails', attorneyDetails?.is_favorite);
     console.log(id);
 
     try {
-     const resp = await markAsFavorite(id).unwrap();
-     console.log('mark as favorite------------------', resp);
+      const resp = await markAsFavorite(id).unwrap();
+      console.log('mark as favorite------------------', resp);
+      if (resp?.success) {
+        onSelect(id);
+        onToggleFavorite(id);
+        Alert.alert('Success', resp?.message || 'Marked as favorite successfully.');
+      }
     } catch (error) {
       console.log(error);
+      Alert.alert('Warning', error?.data?.message || 'Something went wrong. Please try again.');
     }
 
   };
@@ -72,10 +80,10 @@ console.log('attorneyDetails', attorneyDetails?.is_favorite);
 
 
 
-  
+
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate('atonomyProfile', { id:attorneyDetails.id || id })}
+      onPress={() => navigation.navigate('atonomyProfile', { id: attorneyDetails.id || id })}
       style={[
         tw`flex-row items-center bg-white p-4 rounded-xl shadow-sm mb-3 border border-gray-200`,
         {
@@ -89,8 +97,8 @@ console.log('attorneyDetails', attorneyDetails?.is_favorite);
         },
       ]}
     >
-      <Image 
-        source={{ uri: image }} 
+      <Image
+        source={{ uri: image }}
         style={tw`w-24 h-24 rounded-sm mr-4`}
         defaultSource={require('../assets/images/avater.png')}
       />
@@ -102,19 +110,19 @@ console.log('attorneyDetails', attorneyDetails?.is_favorite);
         </Text>
       </View>
 
-      <TouchableOpacity 
-        onPress={handleFavoritePress} 
+      <TouchableOpacity
+        onPress={handleFavoritePress}
         disabled={isLoading}
         style={tw`ml-2`}
       >
         {isLoading ? (
           <ActivityIndicator size="small" color="#0000ff" />
         ) : (
-          <SvgXml 
-            xml={attorneyDetails?.is_favorite ? correctchekcircle : chekcircle} 
-            width="24" 
-            height="24" 
-            fill={attorneyDetails?.is_favorite ? 'green' : 'gray'} 
+          <SvgXml
+            xml={attorneyDetails?.is_favorite ? correctchekcircle : chekcircle}
+            width="24"
+            height="24"
+            fill={attorneyDetails?.is_favorite ? 'green' : 'gray'}
           />
         )}
       </TouchableOpacity>
