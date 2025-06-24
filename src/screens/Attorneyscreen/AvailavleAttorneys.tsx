@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -6,17 +6,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-
-import {useNavigation} from '@react-navigation/native';
-import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import AvailableAttorneyCard from '../../components/AvailableAttorneyCard';
 import FiltaredHeader from '../../components/FiltaredHeader';
 import tw from '../../lib/tailwind';
-import {useGetLawyersQuery} from '../../redux/features/users/UserApi';
+import { useGetLawyersQuery } from '../../redux/features/users/UserApi';
 
 type RootStackParamList = {
   createownprofile: undefined;
-  attornyProfile: {id: number};
+  attornyProfile: { id: number }; // Fixed typo from 'atonomyProfile'
 };
 
 type Attorney = {
@@ -34,23 +33,29 @@ type Attorney = {
 const AvailableAttorneys = () => {
   const [page, setPage] = useState(1);
   const [perPage] = useState(10);
-  const {data, isLoading, isFetching, isError, error} = useGetLawyersQuery({
+  const {
+    data,
+    isLoading,
+    isFetching,
+    isError,
+    error
+  } = useGetLawyersQuery({
     page,
     per_page: perPage,
   });
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const availableLawyers = data?.lawyers?.data || [];
-  console.log('data', data);
+
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const availableLawyers = data?.lawyers?.data ?? [];
+  const hasMore = Boolean(data?.lawyers?.next_page_url);
+
   const loadMoreAttorneys = () => {
-    if (data?.lawyers?.next_page_url && !isFetching) {
+    if (hasMore && !isFetching) {
       setPage(prev => prev + 1);
     }
   };
 
   const handleAttorneyPress = (id: number) => {
-    navigation.navigate('atonomyProfile', {id});
-    console.log('Attorney ID:', id);
+    navigation.navigate('attornyProfile', { id }); // Fixed route name
   };
 
   if (isLoading && page === 1) {
@@ -62,16 +67,17 @@ const AvailableAttorneys = () => {
   }
 
   if (isError) {
+    console.log('Error fetching attorneys:', error);
     return (
       <View style={tw`flex-1 justify-center items-center bg-[#F5F5F7]`}>
-        <Text style={tw`text-lg text-red`}>
-          Error loading attorneys: {error?.toString()}
+        <Text style={tw`text-lg text-[#41414D]`}>
+          {error?.data?.message || 'Failed to fetch attorneys'}
         </Text>
       </View>
     );
   }
 
-  if (!availableLawyers.length) {
+  if (!availableLawyers?.length) {
     return (
       <View style={tw`flex-1 justify-center items-center bg-[#F5F5F7]`}>
         <Text style={tw`text-lg text-[#41414D]`}>No attorneys found</Text>
@@ -85,7 +91,8 @@ const AvailableAttorneys = () => {
         <FiltaredHeader title={'Back'} />
         <TouchableOpacity
           onPress={() => navigation.navigate('createownprofile')}
-          style={tw`pt-2 border-b border-[#1B69AD]`}>
+          style={tw`pt-2 border-b border-[#1B69AD]`}
+        >
           <Text style={tw`text-[#1B69AD] font-semibold`}>
             Create your own profile
           </Text>
@@ -99,13 +106,13 @@ const AvailableAttorneys = () => {
 
         <FlatList
           data={availableLawyers}
-          keyExtractor={item => item.id.toString()}
-          renderItem={({item}) => (
+          keyExtractor={item => item?.id?.toString()}
+          renderItem={({ item }) => (
             <AvailableAttorneyCard
-              name={item.full_name}
-              description={`Specializes in ${item.role}`}
-              image={{uri: item.avatar}}
-              onPress={() => handleAttorneyPress(item.id)}
+              name={item?.full_name ?? 'Attorney'}
+              description={`Specializes in ${item?.role ?? 'law'}`}
+              image={{ uri: item?.avatar ?? '' }}
+              onPress={() => handleAttorneyPress(item?.id)}
             />
           )}
           onEndReached={loadMoreAttorneys}

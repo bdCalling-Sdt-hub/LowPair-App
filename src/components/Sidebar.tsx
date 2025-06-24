@@ -87,6 +87,7 @@ const Sidebar: React.FC = () => {
   };
 
   const userItems = [
+    "Home",
     'About us',
     'Legal resources',
     'Disclaimers',
@@ -94,6 +95,7 @@ const Sidebar: React.FC = () => {
 
   ];
   const LawyerItems = [
+    "Home",
     'About us',
     'Legal resources',
     'Disclaimers',
@@ -116,21 +118,29 @@ const Sidebar: React.FC = () => {
 
             {(user?.role === 'user' ? userItems : LawyerItems).map((item, index) => (
               <Text
-                style={tw`text-[#41414D] text-[16px] font-bold  mb-4 rounded-lg`}
+                style={tw`text-[#41414D] text-[16px] font-bold mb-4 rounded-lg`}
                 key={index}
                 onPress={() => {
-                  const screenName =
-                    item === 'Update password' ||
-                      item === 'Update personal information'
-                      ? 'editprofile'
-                      : item;
+                  let screenName = '';
+
+                  switch (item) {
+                    case 'Home':
+                      screenName = 'attorneybottomroutes';
+                      break;
+                    case 'Update password':
+                    case 'Update personal information':
+                      screenName = 'editprofile';
+                      break;
+                    default:
+                      screenName = item;
+                  }
 
                   navigation.navigate(screenName, { title: item });
                 }}
-              // Modify to correct screen
               >
                 {item}
               </Text>
+
             ))}
             {/* <TouchableOpacity onPress={() => setModalVisible(true)}>
               <Text style={tw`text-red text-[16px] font-bold mb-4 rounded-lg`}>
