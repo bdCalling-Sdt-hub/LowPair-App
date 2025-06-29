@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Dimensions,
   FlatList,
   Image,
   Pressable,
@@ -27,7 +28,7 @@ interface LegalHelpCategory {
 
 const HomeScreen: React.FC = () => {
   const Navigation = useNavigation();
-
+  const { width } = Dimensions.get('window');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const legalHelpCategories: LegalHelpCategory[] = [
@@ -73,7 +74,7 @@ const HomeScreen: React.FC = () => {
   if (error) return <Text>Error fetching categories</Text>;
 
   return (
-    <ScrollView style={tw`flex-1 bg-[#F5F5F7]`}>
+    <ScrollView showsVerticalScrollIndicator={false} style={tw`flex-1 bg-[#F5F5F7]`}>
       {/* Header */}
       <MainScreenHeader />
 
@@ -160,32 +161,37 @@ const HomeScreen: React.FC = () => {
         </Text>
 
         {/* Legal Compass Card */}
-
         <FlatList
           scrollEnabled={false}
           data={legaldata?.legal_resources?.data || []}
           keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => (
-            <View style={tw`rounded-lg overflow-hidden relative mb-4`}>
+            <View
+              key={item.id}
+              style={[
+                tw`rounded-lg w-full mb-4 overflow-hidden`,
+                { height: width * 0.4 } // Set a proportional height based on screen width
+              ]}
+            >
               <Image
                 source={{ uri: item?.image }}
-                style={tw`w-full h-40 `} // Placeholder background
+                style={tw`w-full h-full`}
                 resizeMode="cover"
-                onError={e =>
-                  console.log('Image Load Error:', e.nativeEvent.error)
-                }
               />
 
               {/* Black Overlay */}
               <View style={tw`absolute inset-0 bg-black opacity-40`} />
 
               {/* Text and Button */}
-              <View style={tw`absolute inset-0 p-5`}>
+              <View style={tw`absolute inset-0 p-5 justify-end pb-6`}>
                 <Text style={tw`text-white text-xl font-bold`}>
                   {item?.title}
                 </Text>
-                <Text style={tw`text-gray-200 text-xs font-normal mt-2`}>
-                  {item.description?.slice(0, 120) + '...'}
+                <Text
+                  style={tw`text-gray-200 text-xs font-normal mt-2`}
+                  numberOfLines={2} // Limit to 2 lines to prevent text overflow
+                >
+                  {item.description}
                 </Text>
                 <TouchableOpacity
                   style={tw`mt-4 bg-white py-2 px-4 rounded-lg shadow-lg shadow-[#00537D1A] max-w-[126px] w-full h-[40px]`}>

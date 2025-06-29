@@ -72,6 +72,20 @@ const CategoryApi = api.injectEndpoints({
         body: data,
       }),
     }),
+
+    aboutUs: builder.query({
+      query: () => ({
+        url: `/admin/about`,
+        method: 'GET',
+      }),
+    }),
+
+    disclaimars: builder.query({
+      query: () => ({
+        url: `/admin/disclaimer`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -85,6 +99,8 @@ export const {
   useGetAllCategoryQuery,
   useCreateYourOwnProfileMutation,
   useMarkasUnfevoriteMutation,
+  useAboutUsQuery,
+  useDisclaimarsQuery,
 } = CategoryApi;
 
 export default CategoryApi;

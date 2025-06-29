@@ -1,4 +1,4 @@
-import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -19,7 +19,7 @@ const baseQuery = fetchBaseQuery({
 });
 
 // Create a wrapper around baseQuery that adds your post-processing
-const baseQueryWithPostProcessing = async (args, api, extraOptions) => {
+const baseQueryWithPostProcessing = async (args: any, api: any, extraOptions: any) => {
   const result = await baseQuery(args, api, extraOptions);
 
   console.log('Base Api Results ===================', result?.data);
@@ -27,11 +27,11 @@ const baseQueryWithPostProcessing = async (args, api, extraOptions) => {
   if (typeof result?.data === 'string') {
     // if (!result.data.endsWith('}')) {
     const withCurly = (result.data += '}');
-    return {data: JSON.parse(withCurly)};
+    return { data: JSON.parse(withCurly) };
     // }
   }
   if (typeof result?.data === 'object') {
-    return {data: result?.data};
+    return { data: result?.data };
   }
   if (result?.error) {
     // console.log("Base Api Error ===================", result.error);
@@ -39,12 +39,12 @@ const baseQueryWithPostProcessing = async (args, api, extraOptions) => {
       if (typeof result?.error?.data === 'string') {
         const withCurly = (result.error.data += '}');
         // console.log(withCurly);
-        return {data: JSON.parse(withCurly)};
+        return { data: JSON.parse(withCurly) };
       }
     }
-    return {error: result.error};
+    return { error: result.error };
   }
-  return {data: result?.data || []};
+  return { data: result?.data || [] };
 };
 
 export const api = createApi({

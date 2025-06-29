@@ -1,7 +1,7 @@
-import {createDrawerNavigator} from '@react-navigation/drawer';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {SafeAreaView} from 'react-native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SafeAreaView } from 'react-native';
 import Sidebar from '../components/Sidebar';
 import tw from '../lib/tailwind';
 import AttorneyProfile from '../screens/Attorneyscreen/AttorneyProfile';
@@ -21,6 +21,9 @@ import FevoriteList from '../screens/fevoritelist/FevoriteList';
 import EditProfile from '../screens/profile/EditProfile';
 import AttorneyBottomRoutes from './AttorneyBottomRoutes';
 import BottomRoutes from './BottomRoutes';
+import Abou from '../screens/about/About';
+import LegalResources from '../screens/legalResources/LegalResources';
+import disclaimer from '../screens/disclaimer/disclaimer';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -61,6 +64,9 @@ const AuthStack = () => (
     <Stack.Screen name="Favorite list" component={FevoriteList} />
     <Stack.Screen name="AvailableAttorneys" component={AvailavleAttorneys} />
     <Stack.Screen name="createownprofile" component={CreateyourOwnprofile} />
+    <Stack.Screen name="About" component={Abou} />
+    <Stack.Screen name="legalresources" component={LegalResources} />
+    <Stack.Screen name="disclaimer" component={disclaimer} />
   </Stack.Navigator>
 );
 

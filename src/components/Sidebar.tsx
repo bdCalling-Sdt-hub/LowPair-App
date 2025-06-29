@@ -127,6 +127,15 @@ const Sidebar: React.FC = () => {
                     case 'Home':
                       screenName = 'attorneybottomroutes';
                       break;
+                    case 'About us':
+                      screenName = 'About';
+                      break;
+                    case 'Legal resources':
+                      screenName = 'legalresources';
+                      break;
+                    case 'Disclaimers':
+                      screenName = 'disclaimer';
+                      break;
                     case 'Update password':
                     case 'Update personal information':
                       screenName = 'editprofile';
